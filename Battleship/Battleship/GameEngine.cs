@@ -32,7 +32,7 @@ namespace Battleship
             
             targetBoat.MakeAHit(hit);
             
-            return new HitResponse(targetBoat.Name, targetBoat.GetHp());
+            return new HitResponse(targetBoat.GetName(), targetBoat.GetHp());
         }
 
         public PlayerState GetCurrentPlayerState()
@@ -82,7 +82,7 @@ namespace Battleship
         }
         private ECellState[,] GenerateBoard()
         {
-            var board = new ECellState[_gameSettings.Height, _gameSettings.Width];
+            var board = new ECellState[_gameSettings.FieldHeight, _gameSettings.FieldWidth];
 
             for (var i = 0; i < board.GetUpperBound(1); i++)
             {

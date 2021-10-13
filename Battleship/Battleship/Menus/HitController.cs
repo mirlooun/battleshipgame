@@ -9,7 +9,7 @@ namespace Battleship.Menus
     {
         private readonly GameEngine _gameEngine;
         
-        private readonly HitLocation _hitLocation = new() { X = 0, Y = 0 };
+        private readonly Location _hitLocation = new(0, 0);
 
         private readonly ECellState[,] _enemyBoard;
         
@@ -32,11 +32,11 @@ namespace Battleship.Menus
                 keyPressed = HandleKeyPress();
                 if (keyPressed != ConsoleKey.Enter) continue;
                 var response = _gameEngine.MakeAHit(new LocationPoint
-                {
-                    X = _hitLocation.X, 
-                    Y = _hitLocation.Y, 
-                    PointState = _gameEngine.GetCurrentEnemyState().PlayerBoard[_hitLocation.X, _hitLocation.Y]
-                });
+                (
+                    _hitLocation.X, 
+                    _hitLocation.Y, 
+                    _gameEngine.GetCurrentEnemyState().PlayerBoard[_hitLocation.X, _hitLocation.Y]
+                ));
 
                 if (response.IsHit || response.IsDestroyed)
                 {

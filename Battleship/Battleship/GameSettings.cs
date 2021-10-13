@@ -2,7 +2,7 @@
 {
     public readonly struct GameSettings
     {
-        public int Height { get; init; }
-        public int Width { get; init; }
+        public int FieldHeight { get; init; }
+        public int FieldWidth { get; init; }
     }
 }

@@ -4,7 +4,7 @@ namespace Battleship.Helpers
 {
     public static class HitLocationChanger
     {
-        public static void MoveUp(HitLocation hitLocation, ECellState[,] board)
+        public static void MoveUp(Location hitLocation, ECellState[,] board)
         {
             try
             {
@@ -18,7 +18,7 @@ namespace Battleship.Helpers
             }
         }
 
-        public static void MoveDown(HitLocation hitLocation, ECellState[,] board)
+        public static void MoveDown(Location hitLocation, ECellState[,] board)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Battleship.Helpers
             }
         }
 
-        public static void MoveRight(HitLocation hitLocation, ECellState[,] board)
+        public static void MoveRight(Location hitLocation, ECellState[,] board)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace Battleship.Helpers
             }
         }
 
-        public static void MoveLeft(HitLocation hitLocation, ECellState[,] board)
+        public static void MoveLeft(Location hitLocation, ECellState[,] board)
         {
             try
             {

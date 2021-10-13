@@ -5,22 +5,21 @@ using Menu;
 
 namespace InitMenu
 {
-    public sealed class InitPlayer : Menu.Menu
+    public sealed class NewPlayerScreenProvider : Menu.Menu
     {
-        private bool _firstWas;
-        public InitPlayer() : base(MenuLevel.InitPlayer, "")
+        public NewPlayerScreenProvider() : base(MenuLevel.InitPlayer, "")
         {
         }
 
-        public Player GetPlayer()
+        public Player NewPlayerScreen(bool isPlayerB)
         {
             string playerName;
             InitPlayerResponse initPlayerResponse;
             do
             {
                 Console.Clear();
-                MenuUi.ShowPlayerOrder(_firstWas);
-                MenuUi.ShowInitPlayerMessage(_firstWas);
+                MenuUi.ShowPlayerOrder(isPlayerB);
+                MenuUi.ShowInitPlayerMessage(isPlayerB);
                 playerName = Console.ReadLine()?.Trim()!;
                 
                 initPlayerResponse = PlayerValidator.IsNameValid(playerName);
@@ -34,8 +33,6 @@ namespace InitMenu
 
             var player = new Player(playerName);
 
-            _firstWas = true;
-            
             return player;
         }
     }

@@ -8,7 +8,7 @@ namespace Battleship.ConsoleUi
         public HitMenuUi() : base(MenuLevel.Battleship, "Make a hit")
         {
         }
-        public static void DrawSingleBoard(ECellState[,] presentationalBoard, HitLocation hit)
+        public static void DrawSingleBoard(ECellState[,] presentationalBoard, Location hit)
         {
             var width = presentationalBoard.GetUpperBound(0) + 1; //x-axis
             var height = presentationalBoard.GetUpperBound(1) + 1; //y-axis

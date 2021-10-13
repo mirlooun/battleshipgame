@@ -12,8 +12,8 @@ namespace Application
     {
         private static GameSettings _gameSettings = new ()
         {
-            Height = 10,
-            Width = 10
+            FieldHeight = 10,
+            FieldWidth = 10
         };
             
         static void Main()
@@ -36,20 +36,20 @@ namespace Application
 
         private static string RunBattleship()
         {
-            // Initialize players
-            var initPlayerMenu = new InitPlayer();
+            // Player creation screens
+            var psProvider = new NewPlayerScreenProvider();
 
-            var playerA = initPlayerMenu.GetPlayer();
+            var playerA = psProvider.NewPlayerScreen(false);
 
-            var playerB = initPlayerMenu.GetPlayer();
+            var playerB = psProvider.NewPlayerScreen(true);
             
-            // Initialize players boards
+            // Init board screens
 
-            var initPlayerBoatsMenu = new InitBoats(_gameSettings);
+            var pbProvider = new NewPlayerBoatsUiProvider(_gameSettings);
 
-            initPlayerBoatsMenu.GetBoats(playerA);
+            pbProvider.PlaceBoatsScreen(playerA);
             
-            initPlayerBoatsMenu.GetBoats(playerB);
+            pbProvider.PlaceBoatsScreen(playerB);
             
             var gameEngine = new GameEngine(_gameSettings, playerA, playerB);
             

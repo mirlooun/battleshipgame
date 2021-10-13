@@ -104,7 +104,7 @@ namespace Menu
 
         public static void ShowGameLogo()
         {
-            Console.Title = "ASCII Art";
+            Console.Title = "Battleship Primordial";
             const string title = @"
 __________         __    __  .__                .__    .__        
 \______   \_____ _/  |__/  |_|  |   ____   _____|  |__ |__|_____  

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Battleship;
 using Battleship.Domain;
 
@@ -6,136 +7,55 @@ namespace InitMenu
 {
     public static class BoatLocationChanger
     {
-        private static EBoatDirection _direction = EBoatDirection.Horizontal;
-
-        public static void ResetDirection()
+        public static void TryDeltaMove(ref Boat boat, int deltaX, int deltaY, GameSettings gs)
         {
-            _direction = EBoatDirection.Horizontal;
-        }
+            var attempt = new Boat(boat);
+            attempt.StartsAt.X += deltaX;
+            attempt.StartsAt.Y += deltaY;
 
-        public static void MoveUp(Boat boat, ECellState[,] board)
-        {
-            try
+            if (IsValidPosition(attempt, gs))
             {
-                foreach (var locationPoint in boat.Locations)
-                {
-                    var y = locationPoint.Y - 1;
-                    var unused = board[locationPoint.X, y];
-                    locationPoint.Y = y;
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                throw new IndexOutOfRangeException();
+                boat = attempt;
             }
         }
-
-        public static void MoveDown(Boat boat, ECellState[,] board)
+        
+        public static void TryRotate(ref Boat boat, GameSettings gs)
         {
-            try
-            {
-                foreach (var locationPoint in boat.Locations)
-                {
-                    var y = locationPoint.Y + 1;
-                    var unused = board[locationPoint.X, y];
-                    locationPoint.Y = y;
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                throw new IndexOutOfRangeException();
-            }
-        }
+            var oldLocations = boat.Locations;
+            int offset = oldLocations.Count / 2;
 
-        public static void MoveRight(Boat boat, ECellState[,] board)
-        {
-            try
+            var newStartsAt = oldLocations[offset];
+            if (boat.Direction == EBoatDirection.Horizontal)
             {
-                foreach (var locationPoint in boat.Locations)
-                {
-                    if (_direction == EBoatDirection.Horizontal)
-                    {
-                        var x = locationPoint.X + 1;
-                        var length = board.GetLength(0);
-                        var index = boat.Locations.IndexOf(locationPoint);
-                        var delta = x + boat.Locations.Count - index;
-                        if (delta > length) throw new IndexOutOfRangeException();
-                        locationPoint.X = x;
-                    }
-                    else
-                    {
-                        var x = locationPoint.X + 1;
-                        var length = board.GetLength(0);
-                        var index = boat.Locations.IndexOf(locationPoint);
-                        var delta = x + 1 - index;
-                        if (delta > length) throw new IndexOutOfRangeException();
-                        locationPoint.X = x;
-                    }
-                }
+                newStartsAt.Y -= offset;
             }
-            catch (IndexOutOfRangeException)
+            else
             {
-                throw new IndexOutOfRangeException();
-            }
-        }
-
-        public static void MoveLeft(Boat boat, ECellState[,] board)
-        {
-            try
-            {
-                foreach (var locationPoint in boat.Locations)
-                {
-                    var x = locationPoint.X - 1;
-                    var unused = board[x, locationPoint.Y];
-                    locationPoint.X = x;
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                throw new IndexOutOfRangeException();
-            }
-        }
-
-        // TODO: implement
-        public static void Rotate(Boat boat, ECellState[,] board)
-        {
-            foreach (var locationPoint in boat.Locations)
-            {
-                try
-                {
-                    int x;
-                    int y;
-                    ECellState unused;
-                    switch (_direction)
-                    {
-                        case EBoatDirection.Vertical:
-                            x = locationPoint.X;
-                            y = locationPoint.Y;
-                            unused = board[y, x];
-                            locationPoint.X = y;
-                            locationPoint.Y = x;
-                            break;
-                        case EBoatDirection.Horizontal:
-                            x = locationPoint.X;
-                            y = locationPoint.Y;
-                            unused = board[y, x];
-                            locationPoint.X = y;
-                            locationPoint.Y = x;
-                            break;
-                    }
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    throw new IndexOutOfRangeException();
-                }
+                newStartsAt.X -= offset;
             }
 
-            _direction = _direction switch
+            var attempt = new Boat(boat);
+            attempt.StartsAt = newStartsAt;
+            attempt.Direction = attempt.Direction switch
             {
                 EBoatDirection.Horizontal => EBoatDirection.Vertical,
                 EBoatDirection.Vertical => EBoatDirection.Horizontal,
-                _ => _direction
+                _ => throw new ArgumentOutOfRangeException()
             };
+
+            if (IsValidPosition(attempt, gs))
+            {
+                boat = attempt;
+            }
+        }
+
+        public static bool IsValidPosition(Boat boat, GameSettings gameSettings)
+        {
+            return boat.Locations.All(pos => pos.X >= 0 && 
+                                             pos.Y >= 0 && 
+                                             pos.X < gameSettings.FieldWidth && 
+                                             pos.Y < gameSettings.FieldHeight
+            );
         }
     }
 }
