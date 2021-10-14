@@ -11,12 +11,9 @@ namespace Battleship.UiProviders
 
         private readonly Location _hitLocation = new(0, 0);
 
-        private readonly ECellState[,] _enemyBoard;
-
         public HitScreenProvider(GameEngine gameEngine) : base(MenuLevel.LevelPlus, "")
         {
             _gameEngine = gameEngine;
-            _enemyBoard = gameEngine.GetCurrentEnemyState().PlayerBoard;
         }
 
         public override string Run()
@@ -27,21 +24,21 @@ namespace Battleship.UiProviders
             do
             {
                 ResetCursorPosition();
-                HitMenuUi.DrawSingleBoard(_gameEngine.GetCurrentEnemyState().PlayerBoard, _hitLocation);
+                HitMenuUi.DrawSingleBoard(_gameEngine.GetCurrentEnemyBoardState(), _hitLocation);
                 MenuUi.ShowMenuItems(MenuItems, PointerLocation);
                 HitMenuUi.ShowLegend();
                 MenuUi.ShowPressKeyMessage();
 
                 keyPressed = HandleKeyPress();
                 if (keyPressed != ConsoleKey.Enter) continue;
-                var response = _gameEngine.MakeAHit(new LocationPoint
+                
+                var response = _gameEngine.MakeAHit(new Location
                 (
                     _hitLocation.X,
-                    _hitLocation.Y,
-                    _gameEngine.GetCurrentEnemyState().PlayerBoard[_hitLocation.X, _hitLocation.Y]
+                    _hitLocation.Y
                 ));
 
-                if (response.IsHit || response.IsDestroyed)
+                if (response.IsSamePlayerMove)
                 {
                     BattleshipUi.ShowHitResponseMessage(response.GetMessage());
                     keyPressed = null;
@@ -67,16 +64,16 @@ namespace Battleship.UiProviders
                 switch (keyPressed.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        HitLocationChanger.MoveUp(_hitLocation, _enemyBoard);
+                        HitLocationChanger.MoveUp(_hitLocation, _gameEngine.GetCurrentEnemyBoardState());
                         break;
                     case ConsoleKey.DownArrow:
-                        HitLocationChanger.MoveDown(_hitLocation, _enemyBoard);
+                        HitLocationChanger.MoveDown(_hitLocation, _gameEngine.GetCurrentEnemyBoardState());
                         break;
                     case ConsoleKey.RightArrow:
-                        HitLocationChanger.MoveRight(_hitLocation, _enemyBoard);
+                        HitLocationChanger.MoveRight(_hitLocation, _gameEngine.GetCurrentEnemyBoardState());
                         break;
                     case ConsoleKey.LeftArrow:
-                        HitLocationChanger.MoveLeft(_hitLocation, _enemyBoard);
+                        HitLocationChanger.MoveLeft(_hitLocation, _gameEngine.GetCurrentEnemyBoardState());
                         break;
                 }
             }

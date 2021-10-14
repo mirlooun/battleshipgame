@@ -12,7 +12,7 @@ namespace Battleship.Domain
         Patrol = 4
     }
 
-    public static class BoatTypeProvider // to singleton
+    public static class BoatTypeProvider
     {
         private static readonly Dictionary<EBoatType, Tuple<string, int>> BoatTypes =
             new()
@@ -43,7 +43,7 @@ namespace Battleship.Domain
 
     public class Boat
     {
-        private EBoatType Type { get; }
+        public EBoatType Type { get; }
 
         private List<LocationPoint>? _locations;
         public List<LocationPoint> Locations
@@ -116,7 +116,7 @@ namespace Battleship.Domain
             return _health;
         }
 
-        public void MakeAHit(LocationPoint hit)
+        public void MakeAHit(Location hit)
         {
             var point = Locations.Find(pl =>
                 pl.X.Equals(hit.X) &&

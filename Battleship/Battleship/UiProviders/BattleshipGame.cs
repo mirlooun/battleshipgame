@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Battleship.ConsoleUi;
-using Contracts.Menu;
+using Battleship.Helpers;
 using Menu;
 
 namespace Battleship.UiProviders
@@ -9,10 +9,12 @@ namespace Battleship.UiProviders
     public sealed class BattleshipGame : Menu.Menu
     {
         private readonly GameEngine _gameEngine;
+        private readonly GameStateController _gameStateController;
 
-        public BattleshipGame(GameEngine gameEngine) : base(MenuLevel.Battleship, "Battleship")
+        public BattleshipGame(GameEngine gameEngine, GameStateController gameStateController) : base(MenuLevel.Battleship, "Battleship")
         {
             _gameEngine = gameEngine;
+            _gameStateController = gameStateController;
         }
         public override string Run()
         {
@@ -25,9 +27,9 @@ namespace Battleship.UiProviders
             do
             {
                 ResetCursorPosition();
-                BattleshipUi.DrawBoard(_gameEngine.GetCurrentEnemyState().PlayerBoard);
-                BattleshipUi.ShowEnemyBoardMessage(_gameEngine.GetCurrentEnemyState().Player.Name);
-                BattleshipUi.ShowCurrentPlayerName(_gameEngine.GetCurrentPlayerState().Player.Name);
+                BattleshipUi.DrawBoard(_gameEngine.GetCurrentEnemyBoardState());
+                BattleshipUi.ShowEnemyBoardMessage(_gameEngine.GetCurrentEnemyName());
+                BattleshipUi.ShowCurrentPlayerName(_gameEngine.GetCurrentPlayerName());
                 MenuUi.ShowMenuItems(MenuItems, PointerLocation);
                 MenuUi.ShowPressKeyMessage();
 
@@ -38,7 +40,7 @@ namespace Battleship.UiProviders
                 var item = MenuItems[PointerLocation];
                 userChoice = item!.MethodToExecute();
                 if (!userChoice.Equals("HitResponse")) continue;
-                BattleshipUi.ShowNextMoveByMessage(_gameEngine.GetCurrentPlayerState().Player.Name);
+                BattleshipUi.ShowNextMoveByMessage(_gameEngine.GetCurrentPlayerName());
                 keyPressed = null;
             } while (
                 keyPressed != ConsoleKey.Enter && NotReturn(userChoice)
@@ -55,16 +57,19 @@ namespace Battleship.UiProviders
         }
         private void AddMenuActions()
         {
-            AddMenuItems(new List<IMenuItem>
+            AddMenuItems(new List<MenuItem>
             {
-                new MenuItem(1, "Make a move", MakeAHit),
-                new MenuItem(2, "Save a game", SaveGameStateToLocal),
-                new MenuItem(3, "Return to main menu", () => "")
+                new (1, "Make a move", MakeAHit),
+                new (2, "Save a game", SaveGameStateToLocal),
+                new (3, "Return to main menu", () => "")
             });
         }
 
         private string SaveGameStateToLocal()
         {
+            _gameStateController.SaveGameToLocal(_gameEngine);
+            Console.WriteLine("Game is saved");
+            Console.Clear();
             return "";
         }
     }

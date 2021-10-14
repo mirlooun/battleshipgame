@@ -29,6 +29,7 @@ namespace Battleship.Helpers
                     FieldHeight = 10,
                     FieldWidth = 10,
                     BoatsCanTouch = EBoatCanTouch.BoatsCanTouch,
+                    HitContinuousMove = EHitContinuousMove.HitContinuousMove,
                     BoatsConfig = new List<BoatConfigurationDto>
                     {
                         new (){ BoatType = EBoatType.Carrier, BoatCount = 1 },

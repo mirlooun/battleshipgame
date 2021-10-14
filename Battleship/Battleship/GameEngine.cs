@@ -7,71 +7,59 @@ namespace Battleship
 {
     public class GameEngine
     {
-        private readonly Dictionary<bool, Player> _players = new();
-
-        private readonly GameSettings _gs;
-        private bool NextMoveByFirst { get; set; } = true;
+        public List<Player> Players { get; } = new(2);
+        public GameSettings Gs { get; }
+        public bool NextMoveByFirst { get; private set; } = true;
         public GameEngine(GameSettings gs, Player first, Player second)
         {
-            _gs = gs;
-            first.PlayerBoard = GenerateEmptyBoard();
-            second.PlayerBoard = GenerateEmptyBoard();
-            _players.Add(NextMoveByFirst, first);
-            _players.Add(!NextMoveByFirst, second);
+            Gs = gs;
+            Players.Add(first);
+            Players.Add(second);
         }
-        public HitResponse MakeAHit(LocationPoint hit)
+        public HitResponse MakeAHit(Location hit)
         {
+            var attempt = GetCurrentPlayer().GetHits().Find(p => p.X.Equals(hit.X) && p.Y.Equals(hit.Y));
+            if (attempt != null)
+            {
+                return new HitResponse(ECellState.Hit);
+            }
+            
             var targetBoat = FindTargetBoat(GetCurrentEnemy().GetBoats(), hit);
 
             if (targetBoat == null)
             {
-                GetCurrentEnemy().PlayerBoard[hit.X, hit.Y] = ECellState.Miss;
+                GetCurrentPlayer().AddHitToHistory(new LocationPoint(hit.X, hit.Y, ECellState.Miss));
                 ChangeNextMove();
-                return new HitResponse();
+                return new HitResponse(ECellState.Miss);
             }
             
             targetBoat.MakeAHit(hit);
+            GetCurrentPlayer().AddHitToHistory(new LocationPoint(hit.X, hit.Y, ECellState.Hit));
             
             return new HitResponse(targetBoat.GetName(), targetBoat.GetHp());
         }
-        public PlayerState GetCurrentPlayerState()
+        public string GetCurrentPlayerName()
         {
-            var player = GetCurrentPlayer();
-
-            var playerState = new PlayerState(player, GetPlayerBoard(player));
-            
-            return playerState;
+            return GetCurrentPlayer().Name;
         }
-        public PlayerState GetCurrentEnemyState()
+        
+        public string GetCurrentEnemyName()
         {
-            var enemyPlayer = GetCurrentEnemy();
-            
-            var playerState = new PlayerState(enemyPlayer, GetPlayerBoard(enemyPlayer));
-            
-            return playerState;
+            return GetCurrentEnemy().Name;
         }
         private Player GetCurrentPlayer()
         {
-            return _players[NextMoveByFirst];
+            var playerIndex = NextMoveByFirst ? 0 : 1;
+            return Players[playerIndex];
         }
         private Player GetCurrentEnemy()
         {
-            return _players[!NextMoveByFirst];
+            var playerIndex = !NextMoveByFirst ? 0 : 1;
+            return Players[playerIndex];
         }
         private void ChangeNextMove()
         {
             NextMoveByFirst = !NextMoveByFirst;
-        }
-        private static ECellState[,] GetPlayerBoard(Player player)
-        {
-            var playerBoard = player.PlayerBoard;
-
-            foreach (var location in player.GetBoats().SelectMany(boat => boat.Locations))
-            {
-                playerBoard[location.X,location.Y] = location.PointState;
-            }
-
-            return playerBoard;
         }
         private static Boat? FindTargetBoat(IEnumerable<Boat> boats, Location hit)
         {
@@ -81,22 +69,12 @@ namespace Battleship
                 );
             return boat;
         }
-        private ECellState[,] GenerateEmptyBoard()
+
+        public ECellState[,] GetCurrentEnemyBoardState()
         {
-            var board = new ECellState[
-                _gs.FieldHeight,
-                _gs.FieldWidth
-            ];
-
-            for (var i = 0; i < board.GetUpperBound(1); i++)
-            {
-                for (var j = 0; j < board.GetUpperBound(0); j++)
-                {
-                    board[i, j] = ECellState.Empty;
-                }
-            }
-
-            return board;
+            var enemyBoats = GetCurrentEnemy().GetBoats();
+            var playerHits = GetCurrentPlayer().GetHits();
+            return PlayerBoardProvider.GetEnemyBoard(enemyBoats, playerHits, Gs);
         }
     }
 }
