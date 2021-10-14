@@ -13,7 +13,7 @@ namespace Menu
             Console.WriteLine($"\n {label}\n");
         }
 
-        public static void ShowMenuItems(List<IMenuItem> menuItems, int pointerLocation)
+        public static void ShowMenuItems(List<MenuItem> menuItems, int pointerLocation)
         {
             foreach (var item in menuItems)
             {

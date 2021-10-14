@@ -2,10 +2,10 @@
 
 namespace Contracts.Menu
 {
-    public interface IMenuItem
+    public interface IMenuItem<TK, T>
     {
-        public int ItemIndex { get; }
+        public TK ItemIndex { get; }
         public string Label { get; }
-        public Func<string> MethodToExecute { get; }
+        public T MethodToExecute { get; }
     }
 }

@@ -2,17 +2,17 @@
 
 namespace Contracts.Menu
 {
-    public abstract class BaseMenuItem : IMenuItem
+    public abstract class BaseMenuItem<TK, T> : IMenuItem<TK, T>
     {
-        protected BaseMenuItem(int itemIndex, string label, Func<string> methodToExecute)
+        protected BaseMenuItem(TK itemIndex, string label, T methodToExecute)
         {
             ItemIndex = itemIndex;
             Label = label;
             MethodToExecute = methodToExecute;
         }
 
-        public int ItemIndex { get; }
+        public TK ItemIndex { get; }
         public string Label { get; }
-        public Func<string> MethodToExecute { get; }
+        public T MethodToExecute { get; }
     }
 }

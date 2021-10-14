@@ -10,7 +10,7 @@ namespace Menu
         protected readonly MenuLevel MenuLevel;
 
         protected readonly string Label;
-        protected readonly List<IMenuItem> MenuItems = new();
+        protected readonly List<MenuItem> MenuItems = new();
         protected int PointerLocation;
         public Menu(MenuLevel level, string label)
         {
@@ -95,11 +95,11 @@ namespace Menu
                     break;
             }
         }
-        protected void AddMenuItem(IMenuItem menuItem)
+        protected void AddMenuItem(MenuItem menuItem)
         {
             MenuItems.Add(menuItem);
         }
-        public void AddMenuItems(List<IMenuItem> menuItems)
+        public void AddMenuItems(List<MenuItem> menuItems)
         {
             foreach (var menuItem in menuItems)
             {
