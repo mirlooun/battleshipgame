@@ -1,17 +1,15 @@
 ﻿using System;
 using Battleship.Domain;
 using Helpers;
+using InitMenu.Helpers;
+using InitMenu.Utils;
 using Menu;
 
 namespace InitMenu
 {
-    public sealed class NewPlayerScreenProvider : Menu.Menu
+    public static class NewPlayerScreenProvider
     {
-        public NewPlayerScreenProvider() : base(MenuLevel.InitPlayer, "")
-        {
-        }
-
-        public Player NewPlayerScreen(bool isPlayerB)
+        public static Player NewPlayerScreen(bool isPlayerB)
         {
             string playerName;
             InitPlayerResponse initPlayerResponse;
@@ -26,7 +24,7 @@ namespace InitMenu
 
                 if (!initPlayerResponse.IsValid)
                 {
-                    MenuUi.ShowValidatorResponse(initPlayerResponse);
+                    WarningUi.ShowValidatorResponse(initPlayerResponse);
                 }
                 
             } while (!initPlayerResponse.IsValid);

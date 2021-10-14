@@ -1,4 +1,6 @@
-﻿namespace Helpers
+﻿using Helpers;
+
+namespace InitMenu.Helpers
 {
     public static class PlayerValidator
     {

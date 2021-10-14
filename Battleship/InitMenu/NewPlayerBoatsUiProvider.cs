@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Battleship;
 using Battleship.ConsoleUi;
 using Battleship.Domain;
@@ -11,11 +10,11 @@ namespace InitMenu
 {
     public sealed class NewPlayerBoatsUiProvider : Menu.Menu
     {
-        private Dictionary<EBoatType, int> _remainingBoatCount = new();
+        private Dictionary<EBoatType, int> _remainingBoatCount = default!;
 
-        private List<Boat>? _placedBoats;
+        private List<Boat> _placedBoats = default!;
 
-        private ECellState[,]? _presentationalBoard;
+        private ECellState[,] _presentationalBoard = default!;
 
         private readonly GameSettings _gameSettings;
 
@@ -32,10 +31,12 @@ namespace InitMenu
             AddBoatsToMenuItems();
 
             ConsoleKey? keyPressed;
+
+            Console.Clear();
             do
             {
-                Console.Clear();
-                BattleshipUi.DrawSingleBoard(_presentationalBoard!);
+                ResetCursorPosition();
+                BattleshipUi.DrawSingleBoard(_presentationalBoard);
                 MenuUi.ShowPlayerNameInContext(player.Name, typeof(NewPlayerBoatsUiProvider));
                 MenuUi.ShowMenuLabelInContext(typeof(NewPlayerBoatsUiProvider));
                 MenuUi.ShowMenuItems(MenuItems, PointerLocation);
@@ -47,6 +48,8 @@ namespace InitMenu
                 var item = MenuItems.GetValueOrDefault(PointerLocation);
                 item!.MethodToExecute();
             } while (keyPressed != ConsoleKey.Enter || IsAllBoatsPlaced());
+
+            Console.Clear();
 
             player.SetPlayerBoats(_placedBoats);
 
@@ -71,6 +74,7 @@ namespace InitMenu
             {
                 { EBoatType.Carrier, 1 },
                 { EBoatType.Battleship, 1 },
+                { EBoatType.Cruiser, 1 },
                 { EBoatType.Submarine, 1 },
                 { EBoatType.Patrol, 1 }
             };
@@ -78,23 +82,22 @@ namespace InitMenu
 
         private bool IsAllBoatsPlaced()
         {
-            var sum = _remainingBoatCount.Values.Sum();
-
-            return sum != 0;
+            return _remainingBoatCount.Values.Sum() != 0;
         }
 
         private void AddBoatsToMenuItems()
         {
-            int i = 1;
+            var i = 1;
             var items = new List<MenuItem>();
             foreach (EBoatType bt in Enum.GetValues(typeof(EBoatType)))
             {
                 if (!_remainingBoatCount.ContainsKey(bt)) continue;
-                
+
                 string toDraw = BoatTypeProvider.GetUiName(bt) + " - x" + _remainingBoatCount[bt];
                 items.Add(new MenuItem(i, toDraw, () => AddBoatLocation(bt)));
                 i++;
             }
+
             AddMenuItems(items);
         }
 
@@ -106,19 +109,29 @@ namespace InitMenu
             }
             else
             {
-                var bpProvider = new BoatPlacementScreenProvider(_presentationalBoard!, _gameSettings);
-                _placedBoats!.Add(bpProvider.PlaceBoatScreen(boatType));
-                RefreshMenuItems(boatType);
+                var bpProvider = new BoatPlacementScreenProvider(_presentationalBoard, _gameSettings);
+                var newBoat = bpProvider.PlaceBoatScreen(boatType);
+                AddCurrentBoatToBoatsList(newBoat);
+                AddCurrentBoatToPresentationalBoard(newBoat);
+                _remainingBoatCount[boatType]--;
+                RefreshMenuItems(AddBoatsToMenuItems);
             }
 
             return "";
         }
 
-        private void RefreshMenuItems(EBoatType boatType)
+        private void AddCurrentBoatToBoatsList(Boat newBoat)
         {
-            _remainingBoatCount[boatType]--;
-            MenuItems.Clear();
-            AddBoatsToMenuItems();
+            newBoat.SetPlaced();
+            _placedBoats.Add(newBoat);
+        }
+
+        private void AddCurrentBoatToPresentationalBoard(Boat boat)
+        {
+            foreach (var point in boat.Locations)
+            {
+                _presentationalBoard[point.X, point.Y] = ECellState.Ship;
+            }
         }
     }
 }

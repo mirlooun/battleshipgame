@@ -3,7 +3,7 @@ using System.Linq;
 using Battleship;
 using Battleship.Domain;
 
-namespace InitMenu
+namespace InitMenu.Helpers
 {
     public static class BoatLocationChanger
     {
@@ -22,7 +22,7 @@ namespace InitMenu
         public static void TryRotate(ref Boat boat, GameSettings gs)
         {
             var oldLocations = boat.Locations;
-            int offset = oldLocations.Count / 2;
+            var offset = oldLocations.Count / 2;
 
             var newStartsAt = oldLocations[offset];
             if (boat.Direction == EBoatDirection.Horizontal)
@@ -49,7 +49,7 @@ namespace InitMenu
             }
         }
 
-        public static bool IsValidPosition(Boat boat, GameSettings gameSettings)
+        private static bool IsValidPosition(Boat boat, GameSettings gameSettings)
         {
             return boat.Locations.All(pos => pos.X >= 0 && 
                                              pos.Y >= 0 && 

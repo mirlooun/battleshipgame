@@ -3,6 +3,8 @@ using Battleship;
 using Battleship.ConsoleUi;
 using Battleship.Domain;
 using Battleship.Helpers;
+using InitMenu.Helpers;
+using InitMenu.Utils;
 using Menu;
 
 namespace InitMenu
@@ -24,32 +26,36 @@ namespace InitMenu
             _preliminaryBoat = new Boat(boatType);
 
             ConsoleKey? keyPressed;
-            var isValid = false;
+            var isOccupied = true;
+            
+            Console.Clear();
             do
             {
-                Console.Clear();
+                ResetCursorPosition();
                 BattleshipUi.DrawSingleBoard(_presentationalBoard, _preliminaryBoat);
                 MenuUi.ShowMenuLabelInContext(typeof(BoatPlacementScreenProvider));
-                MenuUi.ShowMenuItems(MenuItems, PointerLocation);
+                MenuUi.ShowPressRKeyMessage();
                 MenuUi.ShowPressKeyMessage();
-
+                
                 keyPressed = HandleKeyPress();
+                
                 if (keyPressed != ConsoleKey.Enter) continue;
-                isValid = BoatLocationValidator.IsBoatLocationOccupied(_preliminaryBoat, _presentationalBoard);
-                if (isValid == false) MenuUi.ShowWarningMessage(new CellIsOccupiedException());
-                keyPressed = null;
-            } while (
-                keyPressed != ConsoleKey.Enter && isValid == false
-            );
-
-            AddCurrentBoatToPresentationalBoard();
-
+                
+                isOccupied = BoatLocationValidator.IsBoatLocationOccupied(_presentationalBoard, _preliminaryBoat);
+                
+                if (!isOccupied) continue;
+                
+                WarningUi.ShowWarningMessage(new CellIsOccupiedException());
+                
+            } while (keyPressed != ConsoleKey.Enter && isOccupied);
+            Console.Clear();
+            
             return _preliminaryBoat;
         }
 
         protected override ConsoleKey HandleKeyPress()
         {
-            var keyPressed = Console.ReadKey();
+            var keyPressed = Console.ReadKey(true);
 
             switch (keyPressed.Key)
             {
@@ -71,14 +77,6 @@ namespace InitMenu
             }
 
             return keyPressed.Key;
-        }
-
-        private void AddCurrentBoatToPresentationalBoard()
-        {
-            foreach (var point in _preliminaryBoat!.Locations)
-            {
-                _presentationalBoard[point.X, point.Y] = ECellState.Ship;
-            }
         }
     }
 }

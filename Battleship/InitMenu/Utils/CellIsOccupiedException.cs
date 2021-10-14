@@ -1,6 +1,6 @@
 using System;
 
-namespace Menu
+namespace InitMenu.Utils
 {
     public class CellIsOccupiedException : Exception
     {
