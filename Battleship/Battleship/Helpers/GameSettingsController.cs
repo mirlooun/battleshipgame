@@ -8,28 +8,29 @@ namespace Battleship.Helpers
         private readonly GameSettings? _gameSettings;
 
         private readonly string _fileNameStandardConfig;
+
         public GameSettingsController(string[] path)
         {
-            
             var basePath = path.Length == 1 ? path[0] : BasePath;
 
-            var defaultSettings = new GameSettings
-            {
-                FieldHeight = 10,
-                FieldWidth = 10,
-                BoatsCanTouch = EBoatCanTouch.BoatsCanTouch
-            };
 
             _fileNameStandardConfig = basePath +
-                                          System.IO.Path.DirectorySeparatorChar +
-                                          "Configs" +
-                                          System.IO.Path.DirectorySeparatorChar +
-                                          "standard.json";
-
-            var confJsonStr = JsonSerializer.Serialize(defaultSettings, GetJsonSerializerOptions());
-
+                                      System.IO.Path.DirectorySeparatorChar +
+                                      "Configs" +
+                                      System.IO.Path.DirectorySeparatorChar +
+                                      "standard.json";
+            
             if (!System.IO.File.Exists(_fileNameStandardConfig))
             {
+                var defaultSettings = new GameSettings
+                {
+                    FieldHeight = 10,
+                    FieldWidth = 10,
+                    BoatsCanTouch = EBoatCanTouch.BoatsCanTouch
+                };
+                
+                var confJsonStr = JsonSerializer.Serialize(defaultSettings, GetJsonSerializerOptions());
+                
                 System.IO.File.WriteAllText(_fileNameStandardConfig, confJsonStr);
                 _gameSettings = defaultSettings;
             }
@@ -40,7 +41,7 @@ namespace Battleship.Helpers
                 _gameSettings = JsonSerializer.Deserialize<GameSettings>(confText);
             }
         }
-        
+
         public GameSettings GetSettings()
         {
             return _gameSettings!;
@@ -56,7 +57,7 @@ namespace Battleship.Helpers
     public interface IGameSettingsController
     {
         public GameSettings GetSettings();
-        
+
         public void SaveSettings();
     }
 }
