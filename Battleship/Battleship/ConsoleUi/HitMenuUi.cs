@@ -1,13 +1,9 @@
 ﻿using System;
-using Menu;
 
 namespace Battleship.ConsoleUi
 {
-    public class HitMenuUi : Menu.Menu
+    public static class HitMenuUi 
     {
-        public HitMenuUi() : base(MenuLevel.Battleship, "Make a hit")
-        {
-        }
         public static void DrawSingleBoard(ECellState[,] presentationalBoard, Location hit)
         {
             var width = presentationalBoard.GetUpperBound(0) + 1; //x-axis
@@ -97,6 +93,25 @@ namespace Battleship.ConsoleUi
                 ECellState.Hit => "@",
                 _ => "-"
             };
+        }
+        
+        public static void ShowLegend()
+        {
+            // hit
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" *");
+            Console.ResetColor();
+            Console.WriteLine(" - is your hit");
+            // damaged ship
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(" @");
+            Console.ResetColor();
+            Console.WriteLine(" - is damaged ship");
+            // miss
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" X");
+            Console.ResetColor();
+            Console.WriteLine(" - is miss");
         }
     }
 }

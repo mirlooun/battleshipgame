@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Threading;
 using Battleship.Domain;
-using Helpers;
 
 namespace Battleship.ConsoleUi
 {
-    public class BattleshipUi : BaseUi
+    public static class BattleshipUi
     {
         public static void DrawBoard(ECellState[,] board)
         {
+            Console.Title = "Battleship";
+            
             var width = board.GetUpperBound(0) + 1; //x-axis
             var height = board.GetUpperBound(1) + 1; //y-axis
+            
             Console.ForegroundColor = ConsoleColor.White;
             for (var colIndex = 0; colIndex < width; colIndex++)
             {
@@ -22,12 +24,15 @@ namespace Battleship.ConsoleUi
             }
 
             Console.WriteLine();
+            
             Console.ForegroundColor = ConsoleColor.Blue;
             for (var colIndex = 0; colIndex < width; colIndex++)
             {
                 if (colIndex == 0) Console.Write("    ");
                 Console.Write("+---+");
             }
+
+            Console.WriteLine();
 
             for (var rowIndex = 0; rowIndex < height; rowIndex++)
             {
@@ -259,13 +264,23 @@ namespace Battleship.ConsoleUi
 
         public static void ShowCurrentPlayerName(string playerName)
         {
-            Console.WriteLine($"Player {playerName} move");
+            Console.Write(" Player ");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write($"{playerName}");
+            Console.ResetColor();
+            Console.Write(" move");
+            Console.WriteLine();
             Console.WriteLine();
         }
 
         public static void ShowEnemyBoardMessage(string playerName)
         {
-            Console.WriteLine($"Player {playerName} board");
+            Console.Write(" Player ");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"{playerName}");
+            Console.ResetColor();
+            Console.Write(" board");
+            Console.WriteLine();
             Console.WriteLine();
         }
 
@@ -281,6 +296,11 @@ namespace Battleship.ConsoleUi
             Console.Clear();
             Console.WriteLine($"Next move by {playerName}");
             Wait();
+        }
+        
+        private static void Wait()
+        {
+            Thread.Sleep(2000);
         }
     }
 }
