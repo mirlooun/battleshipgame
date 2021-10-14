@@ -22,11 +22,12 @@ namespace InitMenu
         }
         private void AddGameSettingsToMenuItems()
         {
-            AddMenuItems(new List<IMenuItem>
+            AddMenuItems(new List<MenuItem>
             {
-                new MenuItem(1, $"Change board sizes - height:{GameSettings.FieldHeight} width:{GameSettings.FieldWidth}", ChangeBoardSizes),
-                new MenuItem(2, $"Change game rules - {GameRuleProvider.GetUiName(GameSettings.BoatsCanTouch)}", ChangeGameRules),
-                new MenuItem(3, "About", DefaultMenuAction)
+                new (1, $"Change board sizes - height:{GameSettings.FieldHeight} width:{GameSettings.FieldWidth}", ChangeBoardSizes),
+                new (2, $"Change boat touch rules - {GameRuleProvider.GetUiName(GameSettings.BoatsCanTouch)}", ChangeTouchingRules),
+                new (3, $"Change hit making rules - {GameRuleProvider.GetUiName(GameSettings.HitContinuousMove)}", ChangeHitMakingRules),
+                new (4, "About", DefaultMenuAction)
             });
         }
         private string ChangeBoardSizes()
@@ -36,9 +37,17 @@ namespace InitMenu
             RefreshMenuItems(AddGameSettingsToMenuItems);
             return userChoice;
         }
-        private string ChangeGameRules()
+        private string ChangeTouchingRules()
         {
-            var menu = new ChangeGameRulesUiProvider(_gsc);
+            var menu = new ChangeGameTouchRulesUiProvider(_gsc);
+            var userChoice = menu.Run();
+            RefreshMenuItems(AddGameSettingsToMenuItems);
+            return userChoice;
+        }
+
+        private string ChangeHitMakingRules()
+        {
+            var menu = new ChangeGameRulesHitUiProvider(_gsc);
             var userChoice = menu.Run();
             RefreshMenuItems(AddGameSettingsToMenuItems);
             return userChoice;

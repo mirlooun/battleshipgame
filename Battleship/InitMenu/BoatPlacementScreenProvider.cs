@@ -42,10 +42,12 @@ namespace InitMenu
                 if (keyPressed != ConsoleKey.Enter) continue;
                 
                 isOccupied = BoatLocationValidator.IsBoatLocationOccupied(_presentationalBoard, _preliminaryBoat);
-                
-                if (!isOccupied) continue;
-                
-                WarningUi.ShowWarningMessage(new CellIsOccupiedException());
+
+                if (isOccupied)
+                {
+                    WarningUi.ShowWarningMessage(new CellIsOccupiedException());
+                    keyPressed = null;
+                }
                 
             } while (keyPressed != ConsoleKey.Enter && isOccupied);
             Console.Clear();

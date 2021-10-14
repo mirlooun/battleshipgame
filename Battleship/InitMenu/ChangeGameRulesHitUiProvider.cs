@@ -5,12 +5,12 @@ using Menu;
 
 namespace InitMenu
 {
-    public class ChangeGameTouchRulesUiProvider : Menu.Menu
+    public class ChangeGameRulesHitUiProvider : Menu.Menu
     {
         private readonly GameSettingsController _gsc;
         private GameSettings GameSettings => _gsc.GetSettings();
-
-        public ChangeGameTouchRulesUiProvider(GameSettingsController gsc) : base(MenuLevel.LevelPlus, "Choose a game rule")
+        
+        public ChangeGameRulesHitUiProvider(GameSettingsController gsc) : base(MenuLevel.LevelPlus, "Choose a game rule")
         {
             _gsc = gsc;
         }
@@ -23,14 +23,14 @@ namespace InitMenu
         private void AddGameSettingsToMenuItems()
         {
             var i = 1;
-            foreach (EBoatCanTouch rule in Enum.GetValues(typeof(EBoatCanTouch)))
+            foreach (EHitContinuousMove rule in Enum.GetValues(typeof(EHitContinuousMove)))
             {
-                var uiName = GameSettings.BoatsCanTouch == rule ?
+                var uiName = GameSettings.HitContinuousMove == rule ?
                     GameRuleProvider.GetUiName(rule) + " *" : 
                     GameRuleProvider.GetUiName(rule);
                 AddMenuItem(new MenuItem(i, uiName, () =>
                 {
-                    GameSettings.BoatsCanTouch = rule;
+                    GameSettings.HitContinuousMove = rule;
                     _gsc.SaveSettings();
                     RefreshMenuItems(AddGameSettingsToMenuItems);
                     return "";

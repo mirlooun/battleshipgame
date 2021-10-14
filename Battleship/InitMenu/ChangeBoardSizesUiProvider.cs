@@ -82,15 +82,15 @@ namespace InitMenu
 
         private void AddGameSettingsToMenuItems()
         {
-            AddMenuItems(new List<IMenuItem>
+            AddMenuItems(new List<MenuItem>
             {
-                new MenuItem(1, $"Change height - current: {_gameSettings.FieldHeight}", () =>
+                new (1, $"Change height - current: {_gameSettings.FieldHeight}", () =>
                 {
                     Console.Clear();
                     _isSetting = (true, true);
                     return "";
                 }),
-                new MenuItem(2, $"Change height - current: {_gameSettings.FieldWidth}", () =>
+                new (2, $"Change height - current: {_gameSettings.FieldWidth}", () =>
                 {
                     Console.Clear();
                     _isSetting = (true, false);

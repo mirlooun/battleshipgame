@@ -81,7 +81,7 @@ namespace InitMenu
         private void AddBoatsToMenuItems()
         {
             var i = 1;
-            var items = new List<IMenuItem>();
+            var items = new List<MenuItem>();
             foreach (EBoatType bt in Enum.GetValues(typeof(EBoatType)))
             {
                 if (!_remainingBoatCount.ContainsKey(bt)) continue;
