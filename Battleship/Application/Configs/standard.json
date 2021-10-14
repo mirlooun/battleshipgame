@@ -1,5 +1,23 @@
 {
   "FieldHeight": 10,
   "FieldWidth": 10,
-  "BoatsCanTouch": 0
+  "BoatsCanTouch": 1,
+  "BoatsConfig": [
+    {
+      "BoatType": 0,
+      "BoatCount": 1
+    },
+    {
+      "BoatType": 2,
+      "BoatCount": 1
+    },
+    {
+      "BoatType": 3,
+      "BoatCount": 1
+    },
+    {
+      "BoatType": 4,
+      "BoatCount": 1
+    }
+  ]
 }
