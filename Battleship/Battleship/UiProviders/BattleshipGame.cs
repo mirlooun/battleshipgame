@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Battleship.ConsoleUi;
+using Contracts.Menu;
 using Menu;
 
 namespace Battleship.UiProviders
@@ -34,7 +35,7 @@ namespace Battleship.UiProviders
 
                 if (keyPressed != ConsoleKey.Enter) continue;
                 
-                var item = MenuItems.GetValueOrDefault(PointerLocation);
+                var item = MenuItems[PointerLocation];
                 userChoice = item!.MethodToExecute();
                 if (!userChoice.Equals("HitResponse")) continue;
                 BattleshipUi.ShowNextMoveByMessage(_gameEngine.GetCurrentPlayerState().Player.Name);
@@ -54,11 +55,11 @@ namespace Battleship.UiProviders
         }
         private void AddMenuActions()
         {
-            AddMenuItems(new List<MenuItem>
+            AddMenuItems(new List<IMenuItem>
             {
-                new(1, "Make a move", MakeAHit),
-                new(2, "Save a game", SaveGameStateToLocal),
-                new(3, "Return to main menu", () => "")
+                new MenuItem(1, "Make a move", MakeAHit),
+                new MenuItem(2, "Save a game", SaveGameStateToLocal),
+                new MenuItem(3, "Return to main menu", () => "")
             });
         }
 

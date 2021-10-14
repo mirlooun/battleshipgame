@@ -13,22 +13,21 @@ namespace Menu
             Console.WriteLine($"\n {label}\n");
         }
 
-        public static void ShowMenuItems(Dictionary<int, IMenuItem> menuItems, int pointerLocation)
+        public static void ShowMenuItems(List<IMenuItem> menuItems, int pointerLocation)
         {
-            foreach (var item in menuItems.OrderBy(x => x.Value.UserChoice))
+            foreach (var item in menuItems)
             {
-                var itemValue = item.Value;
-                if (itemValue.UserChoice - 1 == pointerLocation)
+                if (item.ItemIndex - 1 == pointerLocation)
                 {
                     Console.BackgroundColor = ConsoleColor.White;
                     Console.ForegroundColor = ConsoleColor.Black;
-                    Console.WriteLine(itemValue);
+                    Console.WriteLine(item);
                 }
                 else
                 {
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine(itemValue);
+                    Console.WriteLine(item);
                 }
             }
 

@@ -13,6 +13,11 @@ namespace Contracts.Menu
         {
             return !userChoice.Equals("Return");
         }
+        
+        protected static bool NotReturnToMain(string userChoice)
+        {
+            return !userChoice.Equals("Return to main");
+        }
 
         protected static bool IsDefault(string userChoice)
         {

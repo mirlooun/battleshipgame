@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Battleship;
 using Battleship.Helpers;
+using Contracts.Menu;
 using InitMenu.Utils;
 using Menu;
 
@@ -21,7 +22,7 @@ namespace InitMenu
         public override string Run()
         {
             AddGameSettingsToMenuItems();
-            AddMenuLevelSpecificActions();
+            AddMenuLevelDefaultActions();
             
             ConsoleKey? keyPressed;
             var userChoice = "";
@@ -63,8 +64,8 @@ namespace InitMenu
                     keyPressed = HandleKeyPress();
                 }
                 if (keyPressed != ConsoleKey.Enter) continue;
-                var item = MenuItems.GetValueOrDefault(PointerLocation);
-                userChoice = item!.MethodToExecute();
+                var item = MenuItems[PointerLocation];
+                userChoice = item.MethodToExecute();
             } while (
                 keyPressed != ConsoleKey.Enter &&
                 NotReturn(userChoice) ||
@@ -81,15 +82,15 @@ namespace InitMenu
 
         private void AddGameSettingsToMenuItems()
         {
-            AddMenuItems(new List<MenuItem>
+            AddMenuItems(new List<IMenuItem>
             {
-                new (1, $"Change height - current: {_gameSettings.FieldHeight}", () =>
+                new MenuItem(1, $"Change height - current: {_gameSettings.FieldHeight}", () =>
                 {
                     Console.Clear();
                     _isSetting = (true, true);
                     return "";
                 }),
-                new (2, $"Change height - current: {_gameSettings.FieldWidth}", () =>
+                new MenuItem(2, $"Change height - current: {_gameSettings.FieldWidth}", () =>
                 {
                     Console.Clear();
                     _isSetting = (true, false);

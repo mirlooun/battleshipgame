@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Battleship;
 using Battleship.Helpers;
+using Contracts.Menu;
 using Menu;
 
 namespace InitMenu
@@ -21,11 +22,11 @@ namespace InitMenu
         }
         private void AddGameSettingsToMenuItems()
         {
-            AddMenuItems(new List<MenuItem>
+            AddMenuItems(new List<IMenuItem>
             {
-                new(1, $"Change board sizes - height:{GameSettings.FieldHeight} width:{GameSettings.FieldWidth}", ChangeBoardSizes),
-                new(2, $"Change game rules - {GameRuleProvider.GetUiName(GameSettings.BoatsCanTouch)}", ChangeGameRules),
-                new(3, "About", DefaultMenuAction)
+                new MenuItem(1, $"Change board sizes - height:{GameSettings.FieldHeight} width:{GameSettings.FieldWidth}", ChangeBoardSizes),
+                new MenuItem(2, $"Change game rules - {GameRuleProvider.GetUiName(GameSettings.BoatsCanTouch)}", ChangeGameRules),
+                new MenuItem(3, "About", DefaultMenuAction)
             });
         }
         private string ChangeBoardSizes()

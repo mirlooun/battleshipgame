@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Contracts.Menu;
 
 namespace Menu
@@ -9,8 +10,7 @@ namespace Menu
         protected readonly MenuLevel MenuLevel;
 
         protected readonly string Label;
-        // TODO: make menu use list instead of dictionary
-        protected readonly Dictionary<int, IMenuItem> MenuItems = new();
+        protected readonly List<IMenuItem> MenuItems = new();
         protected int PointerLocation;
         public Menu(MenuLevel level, string label)
         {
@@ -42,7 +42,7 @@ namespace Menu
                 
                 keyPressed = HandleKeyPress();
                 if (keyPressed != ConsoleKey.Enter) continue;
-                var item = MenuItems.GetValueOrDefault(PointerLocation);
+                var item = MenuItems.ElementAt(PointerLocation);
                 userChoice = item!.MethodToExecute();
 
             } while (
@@ -97,13 +97,13 @@ namespace Menu
         }
         protected void AddMenuItem(IMenuItem menuItem)
         {
-            MenuItems.Add(MenuItems.Count, menuItem);
+            MenuItems.Add(menuItem);
         }
-        public void AddMenuItems(List<MenuItem> menuItems)
+        public void AddMenuItems(List<IMenuItem> menuItems)
         {
             foreach (var menuItem in menuItems)
             {
-                MenuItems.Add(MenuItems.Count, menuItem);    
+                MenuItems.Add(menuItem);    
             }
         }
         protected string DefaultMenuAction()

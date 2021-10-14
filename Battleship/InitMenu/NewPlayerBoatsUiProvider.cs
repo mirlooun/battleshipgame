@@ -4,6 +4,7 @@ using System.Linq;
 using Battleship;
 using Battleship.ConsoleUi;
 using Battleship.Domain;
+using Contracts.Menu;
 using Menu;
 
 namespace InitMenu
@@ -45,8 +46,8 @@ namespace InitMenu
                 keyPressed = HandleKeyPress();
 
                 if (keyPressed != ConsoleKey.Enter) continue;
-                var item = MenuItems.GetValueOrDefault(PointerLocation);
-                item!.MethodToExecute();
+                var item = MenuItems[PointerLocation];
+                item.MethodToExecute();
             } while (keyPressed != ConsoleKey.Enter || IsAllBoatsPlaced());
 
             Console.Clear();
@@ -80,7 +81,7 @@ namespace InitMenu
         private void AddBoatsToMenuItems()
         {
             var i = 1;
-            var items = new List<MenuItem>();
+            var items = new List<IMenuItem>();
             foreach (EBoatType bt in Enum.GetValues(typeof(EBoatType)))
             {
                 if (!_remainingBoatCount.ContainsKey(bt)) continue;
