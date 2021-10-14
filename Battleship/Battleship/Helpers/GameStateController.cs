@@ -65,7 +65,7 @@ namespace Battleship.Helpers
                 GameSettings = gameEngine.Gs
             };
             var confJsonStr = JsonSerializer.Serialize(gameEngineDto, GetJsonSerializerOptions());
-            var saveFileName = "save1" + "_" + ".json";
+            var saveFileName =   "save_" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss") + ".json";
             System.IO.File.WriteAllText(_directoryNameStandardConfig + saveFileName, confJsonStr);
         }
 
