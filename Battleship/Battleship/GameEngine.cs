@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Battleship.Domain;
+using Battleship.Helpers;
 
 namespace Battleship
 {
@@ -8,17 +9,16 @@ namespace Battleship
     {
         private readonly Dictionary<bool, Player> _players = new();
 
-        private readonly GameSettings _gameSettings;
+        private readonly GameSettings _gs;
         private bool NextMoveByFirst { get; set; } = true;
-        public GameEngine(GameSettings gameSettings, Player first, Player second)
+        public GameEngine(GameSettings gs, Player first, Player second)
         {
-            _gameSettings = gameSettings;
-            first.PlayerBoard = GenerateBoard();
-            second.PlayerBoard = GenerateBoard();
+            _gs = gs;
+            first.PlayerBoard = GenerateEmptyBoard();
+            second.PlayerBoard = GenerateEmptyBoard();
             _players.Add(NextMoveByFirst, first);
             _players.Add(!NextMoveByFirst, second);
         }
-        
         public HitResponse MakeAHit(LocationPoint hit)
         {
             var targetBoat = FindTargetBoat(GetCurrentEnemy().GetBoats(), hit);
@@ -34,7 +34,6 @@ namespace Battleship
             
             return new HitResponse(targetBoat.GetName(), targetBoat.GetHp());
         }
-
         public PlayerState GetCurrentPlayerState()
         {
             var player = GetCurrentPlayer();
@@ -43,7 +42,6 @@ namespace Battleship
             
             return playerState;
         }
-        
         public PlayerState GetCurrentEnemyState()
         {
             var enemyPlayer = GetCurrentEnemy();
@@ -75,14 +73,20 @@ namespace Battleship
 
             return playerBoard;
         }
-        private static Boat? FindTargetBoat(List<Boat> boats, LocationPoint hit)
+        private static Boat? FindTargetBoat(IEnumerable<Boat> boats, Location hit)
         {
-            var boat = boats.FirstOrDefault(boat => boat.Locations.FirstOrDefault(pl => pl.X.Equals(hit.X) && pl.Y.Equals(hit.Y)) != null);
+            var boat = boats.FirstOrDefault(
+                boat => boat.Locations
+                    .FirstOrDefault(pl => pl.X.Equals(hit.X) && pl.Y.Equals(hit.Y)) != null
+                );
             return boat;
         }
-        private ECellState[,] GenerateBoard()
+        private ECellState[,] GenerateEmptyBoard()
         {
-            var board = new ECellState[_gameSettings.FieldHeight, _gameSettings.FieldWidth];
+            var board = new ECellState[
+                _gs.FieldHeight,
+                _gs.FieldWidth
+            ];
 
             for (var i = 0; i < board.GetUpperBound(1); i++)
             {

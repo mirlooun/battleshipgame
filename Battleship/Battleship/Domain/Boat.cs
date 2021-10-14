@@ -28,7 +28,7 @@ namespace Battleship.Domain
         {
             return BoatTypes[type].Item1;
         }
-        
+
         public static int GetLength(EBoatType type)
         {
             return BoatTypes[type].Item2;
@@ -40,23 +40,39 @@ namespace Battleship.Domain
         Vertical,
         Horizontal
     }
-    
+
     public class Boat
     {
-        public EBoatType Type { get; }
-        public List<LocationPoint> Locations => GenerateLocations(StartsAt, Type, Direction);
+        private EBoatType Type { get; }
 
+        private List<LocationPoint>? _locations;
+        public List<LocationPoint> Locations
+        {
+            get
+            {
+                _locations ??= GenerateLocations(StartsAt, Type, Direction);
+                return IsPlaced ? _locations : GenerateLocations(StartsAt, Type, Direction);
+            }
+        }
+
+        private bool IsPlaced { get; set; }
+
+        public void SetPlaced()
+        {
+            IsPlaced = true;
+        }
         public Location StartsAt { get; set; }
         public EBoatDirection Direction { get; set; }
+
         private int _health;
-        
+
         public Boat(EBoatType type)
         {
             Type = type;
 
             StartsAt = new Location(0, 0);
             Direction = EBoatDirection.Horizontal;
-            
+
             _health = BoatTypeProvider.GetLength(type);
         }
 
@@ -67,28 +83,29 @@ namespace Battleship.Domain
             Direction = from.Direction;
             _health = from._health;
         }
-
-        public static List<LocationPoint> GenerateLocations(Location start, EBoatType type, EBoatDirection direction)
+        private static List<LocationPoint> GenerateLocations(Location start, EBoatType type, EBoatDirection direction)
         {
             var locations = new List<LocationPoint>();
+            
             for (var i = 0; i < BoatTypeProvider.GetLength(type); i++)
             {
                 var location = new LocationPoint(
                     start.X + (direction == EBoatDirection.Horizontal ? i : 0),
                     start.Y + (direction == EBoatDirection.Vertical ? i : 0),
                     ECellState.Ship
-                    );
-                
+                );
+
                 locations.Add(location);
             }
+
             return locations;
         }
-        
+
         public string GetName()
         {
             return BoatTypeProvider.GetUiName(Type);
         }
-        
+
         public int GetLength()
         {
             return BoatTypeProvider.GetLength(Type);
@@ -102,7 +119,8 @@ namespace Battleship.Domain
         public void MakeAHit(LocationPoint hit)
         {
             var point = Locations.Find(pl =>
-                pl.X.Equals(hit.X) && pl.Y.Equals(hit.Y));
+                pl.X.Equals(hit.X) &&
+                pl.Y.Equals(hit.Y));
             point!.PointState = ECellState.Hit;
             ReduceBoatHp();
         }

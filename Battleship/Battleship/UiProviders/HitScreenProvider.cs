@@ -3,38 +3,41 @@ using Battleship.ConsoleUi;
 using Battleship.Helpers;
 using Menu;
 
-namespace Battleship.Menus
+namespace Battleship.UiProviders
 {
-    public sealed class HitController : Menu.Menu
+    public sealed class HitScreenProvider : Menu.Menu
     {
         private readonly GameEngine _gameEngine;
-        
+
         private readonly Location _hitLocation = new(0, 0);
 
         private readonly ECellState[,] _enemyBoard;
-        
-        public HitController(GameEngine gameEngine) : base(MenuLevel.LevelPlus, "")
+
+        public HitScreenProvider(GameEngine gameEngine) : base(MenuLevel.LevelPlus, "")
         {
             _gameEngine = gameEngine;
             _enemyBoard = gameEngine.GetCurrentEnemyState().PlayerBoard;
         }
+
         public override string Run()
         {
             ConsoleKey? keyPressed;
-           
+            
+            Console.Clear();
             do
             {
-                Console.Clear();
+                ResetCursorPosition();
                 HitMenuUi.DrawSingleBoard(_gameEngine.GetCurrentEnemyState().PlayerBoard, _hitLocation);
                 MenuUi.ShowMenuItems(MenuItems, PointerLocation);
+                HitMenuUi.ShowLegend();
                 MenuUi.ShowPressKeyMessage();
 
                 keyPressed = HandleKeyPress();
                 if (keyPressed != ConsoleKey.Enter) continue;
                 var response = _gameEngine.MakeAHit(new LocationPoint
                 (
-                    _hitLocation.X, 
-                    _hitLocation.Y, 
+                    _hitLocation.X,
+                    _hitLocation.Y,
                     _gameEngine.GetCurrentEnemyState().PlayerBoard[_hitLocation.X, _hitLocation.Y]
                 ));
 
@@ -50,13 +53,14 @@ namespace Battleship.Menus
             } while (
                 keyPressed != ConsoleKey.Enter
             );
+            Console.Clear();
 
             return "HitResponse";
         }
 
         protected override ConsoleKey HandleKeyPress()
         {
-            var keyPressed = Console.ReadKey();
+            var keyPressed = Console.ReadKey(true);
 
             try
             {
@@ -75,7 +79,8 @@ namespace Battleship.Menus
                         HitLocationChanger.MoveLeft(_hitLocation, _enemyBoard);
                         break;
                 }
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return keyPressed.Key;
             }

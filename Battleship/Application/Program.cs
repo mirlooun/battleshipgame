@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Battleship;
-using Battleship.Menus;
+using Battleship.Helpers;
+using Battleship.UiProviders;
 using InitMenu;
 using Menu;
 
@@ -10,64 +12,78 @@ namespace Application
 {
     static class Program
     {
-        private static GameSettings _gameSettings = new ()
+        private static GameStateControllerUnit? GSCU;
+        private static GameSettings GameSettings => GSCU!.GSettingsController.GetSettings();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, bool bRepaint);
+
+        static void Main(string[] args)
         {
-            FieldHeight = 10,
-            FieldWidth = 10
-        };
-            
-        static void Main()
-        {
+            SetConsoleWindowPosition();
+            InitializeGameStateControllerUnit(args);
             Run();
             Exit();
         }
 
+        private static void SetConsoleWindowPosition()
+        {
+            var ptr = GetConsoleWindow();
+            MoveWindow(ptr, 600, 250, 600, 600, true);
+        }
+
+        private static void InitializeGameStateControllerUnit(string[] path)
+        {
+            GSCU = new GameStateControllerUnit(path);
+        }
+
         private static void Run()
         {
-            var menu = new Menu.Menu(MenuLevel.Level0, "Main menu");
+            var menu = new Menu.Menu(MenuLevel.Root, "Main menu");
             menu.AddMenuItems(new()
             {
                 new MenuItem(1, "Start new game", RunBattleship),
-                new MenuItem(2, "Load game", DefaultAction),
+                new MenuItem(2, "Load game", LoadGame),
                 new MenuItem(3, "Settings", RunSettingsMenu)
             });
             menu.Run();
+        }
+        
+        // TODO: implement
+        private static string LoadGame()
+        {
+            // var menu = new LoadGameMenu();
+            return "";
         }
 
         private static string RunBattleship()
         {
             // Player creation screens
-            var psProvider = new NewPlayerScreenProvider();
+            var playerA = NewPlayerScreenProvider.NewPlayerScreen(false);
 
-            var playerA = psProvider.NewPlayerScreen(false);
+            var playerB = NewPlayerScreenProvider.NewPlayerScreen(true);
 
-            var playerB = psProvider.NewPlayerScreen(true);
-            
             // Init board screens
 
-            var pbProvider = new NewPlayerBoatsUiProvider(_gameSettings);
+            var pbProvider = new NewPlayerBoatsUiProvider(GameSettings);
 
             pbProvider.PlaceBoatsScreen(playerA);
-            
+
             pbProvider.PlaceBoatsScreen(playerB);
-            
-            var gameEngine = new GameEngine(_gameSettings, playerA, playerB);
-            
+
+            var gameEngine = new GameEngine(GameSettings, playerA, playerB);
+
             var game = new BattleshipGame(gameEngine);
-            
+
             return game.Run();
         }
 
         private static string RunSettingsMenu()
         {
-            var menu = new Menu.Menu(MenuLevel.Level1, "Game settings");
-            menu.AddMenuItems(new List<MenuItem>
-            {
-                new(1, "Board height", DefaultAction),
-                new(2, "Board width", DefaultAction),
-                new(3, "About", DefaultAction)
-            });
-
+            var menu = new SettingsUiProvider(GSCU!.GSettingsController);
             var userChoice = menu.Run();
             return userChoice;
         }
@@ -90,6 +106,7 @@ namespace Application
         {
             Console.WriteLine("Choice not implemented yet...");
             Thread.Sleep(800);
+            Console.Clear();
             return "";
         }
     }

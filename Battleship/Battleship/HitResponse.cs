@@ -11,11 +11,9 @@
             BoatName = boatName;
             IsDestroyed = boatHp == 0;
         }
-
         public HitResponse()
         {
         }
-
         public string GetMessage()
         {
             string message = IsHit switch
