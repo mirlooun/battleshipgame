@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Battleship.Helpers
 {
@@ -19,7 +18,7 @@ namespace Battleship.Helpers
                                       "Configs" +
                                       System.IO.Path.DirectorySeparatorChar +
                                       "standard.json";
-            
+
             if (!System.IO.File.Exists(_fileNameStandardConfig))
             {
                 var defaultSettings = new GameSettings
@@ -28,6 +27,11 @@ namespace Battleship.Helpers
                     FieldWidth = 10,
                     BoatsCanTouch = EBoatCanTouch.BoatsCanTouch
                 };
+
+                if (!System.IO.Directory.Exists(basePath + System.IO.Path.DirectorySeparatorChar + "Configs"))
+                {
+                    System.IO.Directory.CreateDirectory(basePath + System.IO.Path.DirectorySeparatorChar + "Configs");
+                }
                 
                 var confJsonStr = JsonSerializer.Serialize(defaultSettings, GetJsonSerializerOptions());
                 

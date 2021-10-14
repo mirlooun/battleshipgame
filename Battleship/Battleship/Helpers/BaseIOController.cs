@@ -4,9 +4,9 @@ namespace Battleship.Helpers
 {
     public class BaseIoController
     {
-        protected string BasePath => System.IO.Directory.GetCurrentDirectory();
+        protected static string BasePath => System.IO.Directory.GetCurrentDirectory();
         
-        protected JsonSerializerOptions GetJsonSerializerOptions()
+        protected static JsonSerializerOptions GetJsonSerializerOptions()
         {
             var jsonOptions = new JsonSerializerOptions()
             {
