@@ -19,7 +19,7 @@ namespace Menu
         }
         public virtual string Run()
         {
-            AddMenuLevelSpecificActions();
+            AddMenuLevelDefaultActions();
             
             ConsoleKey? keyPressed;
             var userChoice = "";
@@ -78,13 +78,22 @@ namespace Menu
 
             return keyPressed.Key;
         }
-        protected void AddMenuLevelSpecificActions()
+        protected void AddMenuLevelDefaultActions()
         {
-            if (MenuLevel != MenuLevel.Root)
+            switch (MenuLevel)
             {
-                AddMenuItem(new MenuItem(MenuItems.Count + 1, "Return", () => "Return"));
+                case MenuLevel.Level1 or MenuLevel.LevelPlus:
+                    AddMenuItem(new MenuItem(MenuItems.Count + 1, "Return", () => "Return"));
+                    if (MenuLevel == MenuLevel.LevelPlus)
+                    {
+                        AddMenuItem(new MenuItem(MenuItems.Count + 1, "Return to main", () => "Return to main"));
+                    }
+                    AddMenuItem(new MenuItem(MenuItems.Count + 1, "Exit", () => "Exit"));
+                    break;
+                case MenuLevel.Root:
+                    AddMenuItem(new MenuItem(MenuItems.Count + 1, "Exit", () => "Exit"));
+                    break;
             }
-            AddMenuItem(new MenuItem(MenuItems.Count + 1, "Exit", () => "Exit"));
         }
         protected void AddMenuItem(IMenuItem menuItem)
         {
@@ -107,7 +116,7 @@ namespace Menu
         {
             MenuItems.Clear();
             addCustomMenuItems();
-            AddMenuLevelSpecificActions();
+            AddMenuLevelDefaultActions();
             Console.Clear();
         }
     }
