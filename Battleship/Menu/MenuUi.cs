@@ -40,12 +40,7 @@ namespace Menu
             Console.WriteLine("\n>> Use arrow keys to navigate");
         }
 
-        public static void ShowValidatorResponse(InitPlayerResponse initPlayerResponse)
-        {
-            Console.Clear();
-            Console.WriteLine(initPlayerResponse.Message);
-            Wait();
-        }
+        
 
         public static void ShowInitPlayerMessage(bool firstWas)
         {
@@ -57,14 +52,15 @@ namespace Menu
 
         public static void ShowPlayerNameInContext(string playerName, Type type)
         {
-            var showMessage = "";
-
-            if (type.Name.Equals("InitBoats"))
+            if (type.Name.Equals("NewPlayerBoatsUiProvider"))
             {
-                showMessage = $" Player {playerName} places boats";
+                Console.Write(" Player ");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write($"{playerName}");
+                Console.ResetColor();
+                Console.Write(" places boats");
             }
 
-            Console.WriteLine(showMessage);
             Console.WriteLine();
         }
 
@@ -78,7 +74,6 @@ namespace Menu
             };
 
             Console.WriteLine(showMessage);
-            Console.WriteLine();
         }
 
         public static void ShowBoatCountWarningMessage(Type type)
@@ -87,21 +82,6 @@ namespace Menu
             Console.WriteLine($"All boats of type {type.Name} have been placed to board!");
             Wait();
         }
-
-        public static void ShowWarningMessage(Exception exception)
-        {
-            Console.Clear();
-            switch (exception)
-            {
-                case IndexOutOfRangeException:
-                    break;
-                case CellIsOccupiedException:
-                    Console.WriteLine("Cell is already occupied by another boat!");
-                    Wait();
-                    break;
-            }
-        }
-
         public static void ShowGameLogo()
         {
             Console.Title = "Battleship Primordial";
@@ -118,7 +98,7 @@ __________         __    __  .__                .__    .__
 
         public static void ShowPlayerOrder(bool first)
         {
-            Console.Title = "ASCII art";
+            Console.Title = "Setup players";
             var player = !first
                 ? @"
 ______ _                         __  
@@ -145,7 +125,7 @@ ______ _                         _____
 
         public static void ShowSettingsLogo()
         {
-            Console.Title = "ASCII art";
+            Console.Title = "Settings";
             const string title = @"
  _____      _   _   _                 
 /  ___|    | | | | (_)                
@@ -157,6 +137,11 @@ ______ _                         _____
                             |___/     
 ";
             Console.WriteLine(title);
+        }
+
+        public static void ShowPressRKeyMessage()
+        {
+            Console.WriteLine(" Press 'R' to rotate a boat");
         }
     }
 

@@ -3,18 +3,12 @@ using Contracts.Menu;
 
 namespace Menu
 {
-    public class MenuItem : IMenuItem
+    public class MenuItem : BaseMenuItem
     {
-        public int UserChoice { get; }
-        public string Label { get; }
-        public Func<string> MethodToExecute { get; }
 
-        public MenuItem(int choice, string itemLabel, Func<string> methodToExecute)
+        public MenuItem(int choice, string itemLabel, Func<string> methodToExecute) : base(choice, itemLabel, methodToExecute)
         {
             if (string.IsNullOrEmpty(itemLabel)) throw new Exception("Menu item label can't be empty string!");
-            UserChoice = choice;
-            Label = itemLabel;
-            MethodToExecute = methodToExecute;
         }
         
         public override string ToString()

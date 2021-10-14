@@ -2,11 +2,10 @@
 {
     public enum MenuLevel
     {
-        Level0,
+        Root,
         Level1,
         LevelPlus,
         Battleship,
-        InitPlayer,
         InitBoats
     }
 }

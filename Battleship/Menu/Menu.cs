@@ -4,10 +4,12 @@ using Contracts.Menu;
 
 namespace Menu
 {
-    public class Menu
+    public class Menu : BaseMenu, IMenu
     {
         protected readonly MenuLevel MenuLevel;
+
         protected readonly string Label;
+        // TODO: make menu use list instead of dictionary
         protected readonly Dictionary<int, IMenuItem> MenuItems = new();
         protected int PointerLocation;
         public Menu(MenuLevel level, string label)
@@ -18,12 +20,14 @@ namespace Menu
         public virtual string Run()
         {
             AddMenuLevelSpecificActions();
-
+            
             ConsoleKey? keyPressed;
             var userChoice = "";
+            
+            Console.Clear();
             do
             {
-                Console.Clear();
+                ResetCursorPosition();
                 if (MenuLevel == MenuLevel.Level1)
                 {
                     MenuUi.ShowSettingsLogo();
@@ -32,52 +36,31 @@ namespace Menu
                 {
                     MenuUi.ShowGameLogo();
                 }
-                
                 MenuUi.ShowMenuLabel(Label);
                 MenuUi.ShowMenuItems(MenuItems, PointerLocation);
                 MenuUi.ShowPressKeyMessage();
                 
                 keyPressed = HandleKeyPress();
-
                 if (keyPressed != ConsoleKey.Enter) continue;
                 var item = MenuItems.GetValueOrDefault(PointerLocation);
                 userChoice = item!.MethodToExecute();
+
             } while (
-                keyPressed != ConsoleKey.Enter && NotReturn(userChoice)
-                || MenuLevel == MenuLevel.Level0 && NotExit(userChoice) 
-                || IsDefault(userChoice)
+                keyPressed != ConsoleKey.Enter &&
+                NotReturn(userChoice) ||
+                MenuLevel == MenuLevel.Root &&
+                NotExit(userChoice) ||
+                IsDefault(userChoice)
             );
+            Console.Clear();
 
             if (userChoice == "Return") userChoice = "";
 
-            return userChoice;
-        }
-        private void AddMenuLevelSpecificActions()
-        {
-            if (MenuLevel != MenuLevel.Level0)
-            {
-                AddMenuItem(new MenuItem(MenuItems.Count + 1, "Return", () => "Return"));
-            }
-            AddMenuItem(new MenuItem(MenuItems.Count + 1, "Exit", () => "Exit"));
-        }
-
-        private bool NotExit(string userChoice)
-        {
-            return !userChoice.Equals("Exit");
-        }
-
-        protected bool NotReturn(string userChoice)
-        {
-            return !userChoice.Equals("Return");
-        }
-
-        private bool IsDefault(string userChoice)
-        {
-            return userChoice.Equals("");
+            return !NotReturn(userChoice) ? "" : userChoice;
         }
         protected virtual ConsoleKey HandleKeyPress()
         {
-            var keyPressed = Console.ReadKey();
+            var keyPressed = Console.ReadKey(true);
 
             switch (keyPressed.Key)
             {
@@ -95,8 +78,15 @@ namespace Menu
 
             return keyPressed.Key;
         }
-
-        private void AddMenuItem(IMenuItem menuItem)
+        protected void AddMenuLevelSpecificActions()
+        {
+            if (MenuLevel != MenuLevel.Root)
+            {
+                AddMenuItem(new MenuItem(MenuItems.Count + 1, "Return", () => "Return"));
+            }
+            AddMenuItem(new MenuItem(MenuItems.Count + 1, "Exit", () => "Exit"));
+        }
+        protected void AddMenuItem(IMenuItem menuItem)
         {
             MenuItems.Add(MenuItems.Count, menuItem);
         }
@@ -107,11 +97,18 @@ namespace Menu
                 MenuItems.Add(MenuItems.Count, menuItem);    
             }
         }
-
         protected string DefaultMenuAction()
         {
-            Console.WriteLine("Not implemented yet.");
+            Console.Clear();
+            Console.WriteLine("Choice not implemented yet..");
             return "";
+        }
+        protected void RefreshMenuItems(Action addCustomMenuItems)
+        {
+            MenuItems.Clear();
+            addCustomMenuItems();
+            AddMenuLevelSpecificActions();
+            Console.Clear();
         }
     }
 }
