@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Battleship.Domain;
 
 namespace Battleship
@@ -9,6 +11,17 @@ namespace Battleship
         public int FieldHeight { get; set; }
         public int FieldWidth { get; set; }
         public EBoatCanTouch BoatsCanTouch { get; set; }
+        public List<BoatConfigurationDto>? BoatsConfig { get; set; }
+        public Dictionary<EBoatType, int> GetBoatsConfiguration()
+        {
+            return BoatsConfig!.ToDictionary(entry => entry.BoatType, entry => entry.BoatCount);
+        }
+    }
+
+    public class BoatConfigurationDto
+    {
+        public EBoatType BoatType { get; init; }
+        public int BoatCount { get; init; }
     }
 
     public enum EBoatCanTouch

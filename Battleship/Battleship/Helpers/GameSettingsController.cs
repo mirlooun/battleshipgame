@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using Battleship.Domain;
 
 namespace Battleship.Helpers
 {
@@ -25,7 +28,14 @@ namespace Battleship.Helpers
                 {
                     FieldHeight = 10,
                     FieldWidth = 10,
-                    BoatsCanTouch = EBoatCanTouch.BoatsCanTouch
+                    BoatsCanTouch = EBoatCanTouch.BoatsCanTouch,
+                    BoatsConfig = new List<BoatConfigurationDto>
+                    {
+                        new (){ BoatType = EBoatType.Carrier, BoatCount = 1 },
+                        new (){ BoatType = EBoatType.Cruiser, BoatCount = 1 },
+                        new (){ BoatType = EBoatType.Submarine, BoatCount = 1 },
+                        new (){ BoatType = EBoatType.Patrol, BoatCount = 1 }
+                    }
                 };
 
                 if (!System.IO.Directory.Exists(basePath + System.IO.Path.DirectorySeparatorChar + "Configs"))
