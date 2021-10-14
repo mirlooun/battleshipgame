@@ -69,15 +69,7 @@ namespace InitMenu
 
         private void GetInitialBoatsList()
         {
-            // TODO: should use get_something from _gameSettings
-            _remainingBoatCount = new Dictionary<EBoatType, int>
-            {
-                { EBoatType.Carrier, 1 },
-                { EBoatType.Battleship, 1 },
-                { EBoatType.Cruiser, 1 },
-                { EBoatType.Submarine, 1 },
-                { EBoatType.Patrol, 1 }
-            };
+            _remainingBoatCount = _gameSettings.GetBoatsConfiguration();
         }
 
         private bool IsAllBoatsPlaced()
