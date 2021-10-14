@@ -76,7 +76,7 @@ namespace Application
 
             var gameEngine = new GameEngine(GameSettings, playerA, playerB);
 
-            var game = new BattleshipGame(gameEngine);
+            var game = new BattleshipGame(gameEngine, GSCU!.GStateController);
 
             return game.Run();
         }

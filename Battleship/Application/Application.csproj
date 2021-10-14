@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <Folder Include="Configs" />
+      <Folder Include="Saves" />
     </ItemGroup>
 
 </Project>
