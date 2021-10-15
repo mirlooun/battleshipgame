@@ -16,6 +16,14 @@ namespace Battleship
             Players.Add(first);
             Players.Add(second);
         }
+        
+        public GameEngine(GameSettings gs, Player first, Player second, bool nextMoveByFirst)
+        {
+            Gs = gs;
+            Players.Add(first);
+            Players.Add(second);
+            NextMoveByFirst = nextMoveByFirst;
+        }
         public HitResponse MakeAHit(Location hit)
         {
             var attempt = GetCurrentPlayer().GetHits().Find(p => p.X.Equals(hit.X) && p.Y.Equals(hit.Y));

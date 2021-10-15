@@ -38,10 +38,17 @@ namespace Battleship.UiProviders
                 if (keyPressed != ConsoleKey.Enter) continue;
                 
                 var item = MenuItems[PointerLocation];
-                userChoice = item!.MethodToExecute();
-                if (!userChoice.Equals("HitResponse")) continue;
-                BattleshipUi.ShowNextMoveByMessage(_gameEngine.GetCurrentPlayerName());
-                keyPressed = null;
+                userChoice = item.MethodToExecute();
+                if (userChoice.Equals("HitResponse"))
+                {
+                    BattleshipUi.ShowNextMoveByMessage(_gameEngine.GetCurrentPlayerName());
+                    keyPressed = null;
+                }
+                
+                if (userChoice.Equals("Saved"))
+                {
+                    keyPressed = null;
+                }
             } while (
                 keyPressed != ConsoleKey.Enter && NotReturn(userChoice)
             );
@@ -55,22 +62,23 @@ namespace Battleship.UiProviders
             var hitMenu = new HitScreenProvider(_gameEngine);
             return hitMenu.Run();
         }
+        private string SaveGameStateToLocal()
+        {
+            _gameStateController.SaveGameToLocal(_gameEngine);
+            Console.Clear();
+            Console.WriteLine("Game is saved");
+            Wait();
+            return "Saved";
+        }
+        
         private void AddMenuActions()
         {
             AddMenuItems(new List<MenuItem>
             {
                 new (1, "Make a move", MakeAHit),
                 new (2, "Save a game", SaveGameStateToLocal),
-                new (3, "Return to main menu", () => "")
+                new (3, "Return to main menu", () => "Return to main")
             });
-        }
-
-        private string SaveGameStateToLocal()
-        {
-            _gameStateController.SaveGameToLocal(_gameEngine);
-            Console.WriteLine("Game is saved");
-            Console.Clear();
-            return "";
         }
     }
 }

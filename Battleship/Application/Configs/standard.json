@@ -19,5 +19,6 @@
       "BoatType": 4,
       "BoatCount": 1
     }
-  ]
+  ],
+  "HitContinuousMove": 1
 }

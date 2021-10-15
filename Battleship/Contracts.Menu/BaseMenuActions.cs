@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Contracts.Menu
 {
@@ -22,6 +23,11 @@ namespace Contracts.Menu
         protected static bool IsDefault(string userChoice)
         {
             return userChoice.Equals("");
+        }
+
+        protected static void Wait()
+        {
+            Thread.Sleep(2000);
         }
     }
 }

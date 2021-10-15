@@ -53,6 +53,7 @@ namespace Battleship.Domain
                 _locations ??= GenerateLocations(StartsAt, Type, Direction);
                 return IsPlaced ? _locations : GenerateLocations(StartsAt, Type, Direction);
             }
+            set => _locations = value;
         }
 
         private bool IsPlaced { get; set; }

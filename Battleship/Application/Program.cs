@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Battleship;
@@ -51,12 +52,11 @@ namespace Application
             });
             menu.Run();
         }
-        
-        // TODO: implement
         private static string LoadGame()
         {
-            // var menu = new LoadGameMenu();
-            return "";
+            var menu = new Menu.Menu(MenuLevel.Level1, "Load game menu");
+            menu.AddMenuItems(GSCU!.GStateController.GetGameSavesList(RunBattleship));
+            return menu.Run();
         }
 
         private static string RunBattleship()
@@ -86,6 +86,13 @@ namespace Application
             var menu = new SettingsUiProvider(GSCU!.GSettingsController);
             var userChoice = menu.Run();
             return userChoice;
+        }
+        
+        private static string RunBattleship(GameEngine gameEngine)
+        {
+            var game = new BattleshipGame(gameEngine, GSCU!.GStateController);
+
+            return game.Run();
         }
 
         private static void Exit()

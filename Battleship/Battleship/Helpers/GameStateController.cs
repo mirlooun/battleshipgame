@@ -1,28 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Battleship.Domain;
 using Battleship.DTO;
+using Menu;
 
 namespace Battleship.Helpers
 {
     public class GameStateController : BaseIoController, IGameStateController
     {
-        private readonly string _directoryNameStandardConfig;
+        private readonly string _gameSavesDirectoryStandardName;
 
         public GameStateController(string[] path)
         {
             var basePath = path.Length == 1 ? path[0] : BasePath;
 
-            _directoryNameStandardConfig = basePath +
+            _gameSavesDirectoryStandardName = basePath +
                                            System.IO.Path.DirectorySeparatorChar +
                                            "Saves" +
                                            System.IO.Path.DirectorySeparatorChar;
 
-            if (!System.IO.Directory.Exists(_directoryNameStandardConfig))
+            if (!System.IO.Directory.Exists(_gameSavesDirectoryStandardName))
             {
-                System.IO.Directory.CreateDirectory(_directoryNameStandardConfig);
+                System.IO.Directory.CreateDirectory(_gameSavesDirectoryStandardName);
             }
         }
 
@@ -66,12 +68,54 @@ namespace Battleship.Helpers
             };
             var confJsonStr = JsonSerializer.Serialize(gameEngineDto, GetJsonSerializerOptions());
             var saveFileName =   "save_" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss") + ".json";
-            System.IO.File.WriteAllText(_directoryNameStandardConfig + saveFileName, confJsonStr);
+            System.IO.File.WriteAllText(_gameSavesDirectoryStandardName + saveFileName, confJsonStr);
         }
 
-        public GameEngine LoadGameFromLocal()
+        public GameEngine LoadGameFromLocal(string saveFilePath)
         {
-            throw new System.NotImplementedException();
+            var saveText = System.IO.File.ReadAllText(saveFilePath);
+            var gameEngineDto = JsonSerializer.Deserialize<GameEngineDto>(saveText)!;
+            
+            var gameSettings = new GameSettings
+            {
+                BoatsConfig = gameEngineDto.GameSettings!.BoatsConfig,
+                BoatsCanTouch = gameEngineDto.GameSettings!.BoatsCanTouch,
+                FieldHeight = gameEngineDto.GameSettings!.FieldHeight,
+                FieldWidth = gameEngineDto.GameSettings!.FieldWidth,
+                HitContinuousMove = gameEngineDto.GameSettings.HitContinuousMove
+            };
+
+            var playerABoats = gameEngineDto.Players![0].Boats!.Select(boat =>
+            {
+                var originalBoat = new Boat(boat.Type);
+                originalBoat.SetPlaced();
+                originalBoat.Locations = boat.Locations!;
+                return originalBoat;
+            }).ToList();
+            
+            var playerAHits = gameEngineDto.Players[0].MadeHits!;
+            var playerAName = gameEngineDto.Players[0].Name!;
+            
+            var playerA = new Player(playerAName, playerABoats, playerAHits);
+            
+            var playerBBoats = gameEngineDto.Players![0].Boats!.Select(boat =>
+            {
+                var originalBoat = new Boat(boat.Type);
+                originalBoat.SetPlaced();
+                originalBoat.Locations = boat.Locations!;
+                return originalBoat;
+            }).ToList();
+            
+            var playerBHits = gameEngineDto.Players[0].MadeHits!;
+            var playerBName = gameEngineDto.Players[0].Name!;
+            
+            var playerB = new Player(playerBName, playerBBoats, playerBHits);
+
+            var nextMoveByFirst = gameEngineDto.NextMoveByFirst;
+            
+            var gameEngine = new GameEngine(gameSettings, playerA, playerB, nextMoveByFirst);
+
+            return gameEngine;
         }
 
         public void SaveGameToDatabase(GameEngine gameEngine)
@@ -79,18 +123,40 @@ namespace Battleship.Helpers
             throw new System.NotImplementedException();
         }
 
-        public GameEngine LoadGameFromDataBase()
+        public GameEngine LoadGameFromDataBase(string gameId)
         {
             throw new System.NotImplementedException();
+        }
+
+        public List<MenuItem> GetGameSavesList(Func<GameEngine, string> delegateRunGame)
+        {
+            var menuItems = new List<MenuItem>();
+            
+            string[] filePaths = Directory.GetFiles(_gameSavesDirectoryStandardName);
+            
+            var i = 1;
+            
+            foreach (var file in filePaths)
+            {
+                var path = file.Split(System.IO.Path.DirectorySeparatorChar);
+                var saveName = path[^1];
+                menuItems.Add(new MenuItem(i, saveName, () =>
+                {
+                    var gameEngine = LoadGameFromLocal(file);
+                    return delegateRunGame(gameEngine);
+                }));
+                i++;
+            }
+
+            return menuItems;
         }
     }
 
     public interface IGameStateController
     {
         public void SaveGameToLocal(GameEngine gameEngine);
-        public GameEngine LoadGameFromLocal();
-
+        public GameEngine LoadGameFromLocal(string filePath);
         public void SaveGameToDatabase(GameEngine gameEngine);
-        public GameEngine LoadGameFromDataBase();
+        public GameEngine LoadGameFromDataBase(string gameId);
     }
 }

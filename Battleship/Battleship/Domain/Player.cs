@@ -12,6 +12,13 @@ namespace Battleship.Domain
         {
             Name = name;
         }
+        
+        public Player(string name, List<Boat> boats, List<LocationPoint> hits)
+        {
+            Name = name;
+            _boats = boats;
+            _madeHits = hits;
+        }
 
         public void SetPlayerBoats(List<Boat> boats)
         {
