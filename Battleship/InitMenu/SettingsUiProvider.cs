@@ -8,11 +8,10 @@ namespace InitMenu
 {
     public class SettingsUiProvider : Menu.Menu
     {
-        private readonly GameSettingsController _gsc;
-        private GameSettings GameSettings => _gsc.GetSettings();
-        public SettingsUiProvider(GameSettingsController gsc) : base(MenuLevel.Level1, "Game settings")
+        private GameSettings _gameSettings;
+        public SettingsUiProvider() : base(MenuLevel.Level1, "Game settings")
         {
-            _gsc = gsc;
+            _gameSettings = GameSettingsController.GetGameSettings();
         }
 
         public override string Run()
@@ -24,22 +23,22 @@ namespace InitMenu
         {
             AddMenuItems(new List<MenuItem>
             {
-                new (1, $"Change board sizes - height:{GameSettings.FieldHeight} width:{GameSettings.FieldWidth}", ChangeBoardSizes),
-                new (2, $"Change boat touch rules - {GameRuleProvider.GetUiName(GameSettings.BoatsCanTouch)}", ChangeTouchingRules),
-                new (3, $"Change hit making rules - {GameRuleProvider.GetUiName(GameSettings.HitContinuousMove)}", ChangeHitMakingRules),
+                new (1, $"Change board sizes - height:{_gameSettings.FieldHeight} width:{_gameSettings.FieldWidth}", ChangeBoardSizes),
+                new (2, $"Change boat touch rules - {GameRuleProvider.GetUiName(_gameSettings.BoatsCanTouch)}", ChangeTouchingRules),
+                new (3, $"Change hit making rules - {GameRuleProvider.GetUiName(_gameSettings.HitContinuousMove)}", ChangeHitMakingRules),
                 new (4, "About", DefaultMenuAction)
             });
         }
         private string ChangeBoardSizes()
         {
-            var menu = new ChangeBoardSizesUiProvider(_gsc);
+            var menu = new ChangeBoardSizesUiProvider();
             var userChoice = menu.Run();
             RefreshMenuItems(AddGameSettingsToMenuItems);
             return userChoice;
         }
         private string ChangeTouchingRules()
         {
-            var menu = new ChangeGameTouchRulesUiProvider(_gsc);
+            var menu = new ChangeGameTouchRulesUiProvider();
             var userChoice = menu.Run();
             RefreshMenuItems(AddGameSettingsToMenuItems);
             return userChoice;
@@ -47,7 +46,7 @@ namespace InitMenu
 
         private string ChangeHitMakingRules()
         {
-            var menu = new ChangeGameRulesHitUiProvider(_gsc);
+            var menu = new ChangeGameRulesHitUiProvider();
             var userChoice = menu.Run();
             RefreshMenuItems(AddGameSettingsToMenuItems);
             return userChoice;

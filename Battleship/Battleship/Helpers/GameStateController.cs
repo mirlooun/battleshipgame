@@ -9,26 +9,23 @@ using Menu;
 
 namespace Battleship.Helpers
 {
-    public class GameStateController : BaseIoController, IGameStateController
+    public static class GameStateController
     {
-        private readonly string _gameSavesDirectoryStandardName;
+        private static string _pathRoot = System.IO.Directory.GetCurrentDirectory();
 
-        public GameStateController(string[] path)
+        private static readonly JsonSerializerOptions? JsonOptions = new ()
         {
-            var basePath = path.Length == 1 ? path[0] : BasePath;
-
-            _gameSavesDirectoryStandardName = basePath +
-                                           System.IO.Path.DirectorySeparatorChar +
-                                           "Saves" +
-                                           System.IO.Path.DirectorySeparatorChar;
-
-            if (!System.IO.Directory.Exists(_gameSavesDirectoryStandardName))
-            {
-                System.IO.Directory.CreateDirectory(_gameSavesDirectoryStandardName);
-            }
+            WriteIndented = true
+        };
+        private static string FileStandardDirectoryLocation => _pathRoot +
+                                                               System.IO.Path.DirectorySeparatorChar +
+                                                               "Saves";
+        
+        public static void SetInitialPath(string[] args)
+        {
+            _pathRoot = args.Length == 1 ? args[0] : _pathRoot;
         }
-
-        public void SaveGameToLocal(GameEngine gameEngine)
+        public static void SaveGameToLocal(GameEngine gameEngine)
         {
             var gameEngineDto = new GameEngineDto
             {
@@ -66,12 +63,14 @@ namespace Battleship.Helpers
                 NextMoveByFirst = gameEngine.NextMoveByFirst,
                 GameSettings = gameEngine.Gs
             };
-            var confJsonStr = JsonSerializer.Serialize(gameEngineDto, GetJsonSerializerOptions());
+            var confJsonStr = JsonSerializer.Serialize(gameEngineDto, JsonOptions);
             var saveFileName =   "save_" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss") + ".json";
-            System.IO.File.WriteAllText(_gameSavesDirectoryStandardName + saveFileName, confJsonStr);
+            System.IO.File.WriteAllText(FileStandardDirectoryLocation +
+                                        System.IO.Path.DirectorySeparatorChar +
+                                        saveFileName, confJsonStr);
         }
 
-        public GameEngine LoadGameFromLocal(string saveFilePath)
+        public static GameEngine LoadGameFromLocal(string saveFilePath)
         {
             var saveText = System.IO.File.ReadAllText(saveFilePath);
             var gameEngineDto = JsonSerializer.Deserialize<GameEngineDto>(saveText)!;
@@ -117,22 +116,12 @@ namespace Battleship.Helpers
 
             return gameEngine;
         }
-
-        public void SaveGameToDatabase(GameEngine gameEngine)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public GameEngine LoadGameFromDataBase(string gameId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public List<MenuItem> GetGameSavesList(Func<GameEngine, string> delegateRunGame)
+        
+        public static List<MenuItem> GetGameSavesList(Func<GameEngine, string> delegateRunGame)
         {
             var menuItems = new List<MenuItem>();
             
-            string[] filePaths = Directory.GetFiles(_gameSavesDirectoryStandardName);
+            string[] filePaths = Directory.GetFiles(FileStandardDirectoryLocation);
             
             var i = 1;
             
@@ -150,13 +139,5 @@ namespace Battleship.Helpers
 
             return menuItems;
         }
-    }
-
-    public interface IGameStateController
-    {
-        public void SaveGameToLocal(GameEngine gameEngine);
-        public GameEngine LoadGameFromLocal(string filePath);
-        public void SaveGameToDatabase(GameEngine gameEngine);
-        public GameEngine LoadGameFromDataBase(string gameId);
     }
 }

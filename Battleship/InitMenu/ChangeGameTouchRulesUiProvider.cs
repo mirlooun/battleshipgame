@@ -7,12 +7,11 @@ namespace InitMenu
 {
     public class ChangeGameTouchRulesUiProvider : Menu.Menu
     {
-        private readonly GameSettingsController _gsc;
-        private GameSettings GameSettings => _gsc.GetSettings();
+        private GameSettings _gameSettings;
 
-        public ChangeGameTouchRulesUiProvider(GameSettingsController gsc) : base(MenuLevel.LevelPlus, "Choose a game rule")
+        public ChangeGameTouchRulesUiProvider() : base(MenuLevel.LevelPlus, "Choose a game rule")
         {
-            _gsc = gsc;
+            _gameSettings = GameSettingsController.GetGameSettings();
         }
         
         public override string Run()
@@ -25,16 +24,16 @@ namespace InitMenu
             var i = 1;
             foreach (EBoatCanTouch rule in Enum.GetValues(typeof(EBoatCanTouch)))
             {
-                var uiName = GameSettings.BoatsCanTouch == rule ?
+                var uiName = _gameSettings.BoatsCanTouch == rule ?
                     GameRuleProvider.GetUiName(rule) + " *" : 
                     GameRuleProvider.GetUiName(rule);
                 AddMenuItem(new MenuItem(i, uiName, () =>
                 {
-                    GameSettings.BoatsCanTouch = rule;
-                    _gsc.SaveSettings();
+                    _gameSettings.BoatsCanTouch = rule;
+                    GameSettingsController.SaveGameSettings();
                     RefreshMenuItems(AddGameSettingsToMenuItems);
                     return "";
-                }));;
+                }));
                 i++;
             }
         }

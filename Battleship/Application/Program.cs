@@ -13,8 +13,7 @@ namespace Application
 {
     static class Program
     {
-        private static GameStateControllerUnit? GSCU;
-        private static GameSettings GameSettings => GSCU!.GSettingsController.GetSettings();
+        private static GameSettings GameSettings => GameSettingsController.GetGameSettings();
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetConsoleWindow();
@@ -25,7 +24,7 @@ namespace Application
         static void Main(string[] args)
         {
             SetConsoleWindowPosition();
-            InitializeGameStateControllerUnit(args);
+            if (args.Length == 1) InitializeGameStateControllers(args);
             Run();
             Exit();
         }
@@ -36,9 +35,10 @@ namespace Application
             MoveWindow(ptr, 600, 250, 600, 600, true);
         }
 
-        private static void InitializeGameStateControllerUnit(string[] path)
+        private static void InitializeGameStateControllers(string[] path)
         {
-            GSCU = new GameStateControllerUnit(path);
+            GameSettingsController.SetInitialPath(path);
+            GameStateController.SetInitialPath(path);
         }
 
         private static void Run()
@@ -55,7 +55,7 @@ namespace Application
         private static string LoadGame()
         {
             var menu = new Menu.Menu(MenuLevel.Level1, "Load game menu");
-            menu.AddMenuItems(GSCU!.GStateController.GetGameSavesList(RunBattleship));
+            menu.AddMenuItems(GameStateController.GetGameSavesList(RunBattleship));
             return menu.Run();
         }
 
@@ -76,21 +76,21 @@ namespace Application
 
             var gameEngine = new GameEngine(GameSettings, playerA, playerB);
 
-            var game = new BattleshipGame(gameEngine, GSCU!.GStateController);
+            var game = new BattleshipGame(gameEngine);
 
             return game.Run();
         }
 
         private static string RunSettingsMenu()
         {
-            var menu = new SettingsUiProvider(GSCU!.GSettingsController);
+            var menu = new SettingsUiProvider();
             var userChoice = menu.Run();
             return userChoice;
         }
         
         private static string RunBattleship(GameEngine gameEngine)
         {
-            var game = new BattleshipGame(gameEngine, GSCU!.GStateController);
+            var game = new BattleshipGame(gameEngine);
 
             return game.Run();
         }

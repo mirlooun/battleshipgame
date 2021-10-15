@@ -10,13 +10,11 @@ namespace InitMenu
 {
     public class ChangeBoardSizesUiProvider : Menu.Menu
     {
-        private readonly GameSettingsController _gsc;
         private readonly GameSettings _gameSettings;
         private (bool, bool) _isSetting;
-        public ChangeBoardSizesUiProvider(GameSettingsController gsc) : base(MenuLevel.LevelPlus, "Setup board sizes")
+        public ChangeBoardSizesUiProvider() : base(MenuLevel.LevelPlus, "Setup board sizes")
         {
-            _gsc = gsc;
-            _gameSettings = gsc.GetSettings();
+            _gameSettings = GameSettingsController.GetGameSettings();
         }
 
         public override string Run()
@@ -52,7 +50,7 @@ namespace InitMenu
                     if (keyPressed == ConsoleKey.Enter)
                     {
                         _isSetting.Item1 = false;
-                        _gsc.SaveSettings();
+                        GameSettingsController.SaveGameSettings();
                         keyPressed = null;
                         Console.Clear();
                         continue;

@@ -9,12 +9,10 @@ namespace Battleship.UiProviders
     public sealed class BattleshipGame : Menu.Menu
     {
         private readonly GameEngine _gameEngine;
-        private readonly GameStateController _gameStateController;
 
-        public BattleshipGame(GameEngine gameEngine, GameStateController gameStateController) : base(MenuLevel.Battleship, "Battleship")
+        public BattleshipGame(GameEngine gameEngine) : base(MenuLevel.Battleship, "Battleship")
         {
             _gameEngine = gameEngine;
-            _gameStateController = gameStateController;
         }
         public override string Run()
         {
@@ -64,7 +62,7 @@ namespace Battleship.UiProviders
         }
         private string SaveGameStateToLocal()
         {
-            _gameStateController.SaveGameToLocal(_gameEngine);
+            GameStateController.SaveGameToLocal(_gameEngine);
             Console.Clear();
             Console.WriteLine("Game is saved");
             Wait();

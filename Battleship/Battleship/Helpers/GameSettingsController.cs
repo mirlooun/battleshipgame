@@ -1,78 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json;
 using Battleship.Domain;
 
 namespace Battleship.Helpers
 {
-    public class GameSettingsController : BaseIoController, IGameSettingsController
+    public static class GameSettingsController
     {
-        private readonly GameSettings? _gameSettings;
+        private static string _pathRoot = System.IO.Directory.GetCurrentDirectory();
+        
+        private static GameSettings? _gameSettings;
 
-        private readonly string _fileNameStandardConfig;
-
-        public GameSettingsController(string[] path)
+        private static readonly JsonSerializerOptions? JsonOptions = new ()
         {
-            var basePath = path.Length == 1 ? path[0] : BasePath;
-
-
-            _fileNameStandardConfig = basePath +
-                                      System.IO.Path.DirectorySeparatorChar +
-                                      "Configs" +
-                                      System.IO.Path.DirectorySeparatorChar +
-                                      "standard.json";
-
-            if (!System.IO.File.Exists(_fileNameStandardConfig))
+            WriteIndented = true
+        };
+        private static string FileStandardPath => FileStandardDirectoryLocation +
+                                                  System.IO.Path.DirectorySeparatorChar +
+                                                  "gameConfig.json";
+        private static string FileStandardDirectoryLocation => _pathRoot +
+                                                               System.IO.Path.DirectorySeparatorChar +
+                                                               "Configs";
+        public static GameSettings GetGameSettings()
+        {
+            if (_gameSettings != null) return _gameSettings;
+            
+            if (!System.IO.Directory.Exists(FileStandardDirectoryLocation))
             {
-                var defaultSettings = new GameSettings
-                {
-                    FieldHeight = 10,
-                    FieldWidth = 10,
-                    BoatsCanTouch = EBoatCanTouch.BoatsCanTouch,
-                    HitContinuousMove = EHitContinuousMove.HitContinuousMove,
-                    BoatsConfig = new List<BoatConfigurationDto>
-                    {
-                        new (){ BoatType = EBoatType.Carrier, BoatCount = 1 },
-                        new (){ BoatType = EBoatType.Cruiser, BoatCount = 1 },
-                        new (){ BoatType = EBoatType.Submarine, BoatCount = 1 },
-                        new (){ BoatType = EBoatType.Patrol, BoatCount = 1 }
-                    }
-                };
+                System.IO.Directory.CreateDirectory(FileStandardDirectoryLocation);
+            }
+            
+            if (System.IO.File.Exists(FileStandardPath))
+            {
+                var confText = System.IO.File.ReadAllText(FileStandardPath);
+                _gameSettings = JsonSerializer.Deserialize<GameSettings>(confText);
+            }
+            else
+            {
+                var defaultSettings = GetDefaultGameSettings();
+                
+                var confJsonStr = JsonSerializer.Serialize(defaultSettings, JsonOptions);
 
-                if (!System.IO.Directory.Exists(basePath + System.IO.Path.DirectorySeparatorChar + "Configs"))
-                {
-                    System.IO.Directory.CreateDirectory(basePath + System.IO.Path.DirectorySeparatorChar + "Configs");
-                }
+                System.IO.File.WriteAllText(FileStandardPath, confJsonStr);
                 
-                var confJsonStr = JsonSerializer.Serialize(defaultSettings, GetJsonSerializerOptions());
-                
-                System.IO.File.WriteAllText(_fileNameStandardConfig, confJsonStr);
                 _gameSettings = defaultSettings;
             }
 
-            if (System.IO.File.Exists(_fileNameStandardConfig))
-            {
-                var confText = System.IO.File.ReadAllText(_fileNameStandardConfig);
-                _gameSettings = JsonSerializer.Deserialize<GameSettings>(confText);
-            }
-        }
-
-        public GameSettings GetSettings()
-        {
             return _gameSettings!;
         }
 
-        public void SaveSettings()
+        public static void SaveGameSettings()
         {
-            var confJsonStr = JsonSerializer.Serialize(_gameSettings, GetJsonSerializerOptions());
-            System.IO.File.WriteAllText(_fileNameStandardConfig, confJsonStr);
+            var confJsonStr = JsonSerializer.Serialize(_gameSettings, JsonOptions);
+            System.IO.File.WriteAllText(_pathRoot, confJsonStr);
         }
-    }
 
-    public interface IGameSettingsController
-    {
-        public GameSettings GetSettings();
+        public static void SetInitialPath(string[] args)
+        {
+            _pathRoot = args.Length == 1 ? args[0] : _pathRoot;
+        }
 
-        public void SaveSettings();
+        private static GameSettings GetDefaultGameSettings()
+        {
+            return new GameSettings
+            {
+                FieldHeight = 10,
+                FieldWidth = 10,
+                BoatsCanTouch = EBoatCanTouch.BoatsCanTouch,
+                HitContinuousMove = EHitContinuousMove.HitContinuousMove,
+                BoatsConfig = new List<BoatConfigurationDto>
+                {
+                    new() { BoatType = EBoatType.Carrier, BoatCount = 1 },
+                    new() { BoatType = EBoatType.Cruiser, BoatCount = 1 },
+                    new() { BoatType = EBoatType.Submarine, BoatCount = 1 },
+                    new() { BoatType = EBoatType.Patrol, BoatCount = 1 }
+                }
+            };
+        }
     }
 }
