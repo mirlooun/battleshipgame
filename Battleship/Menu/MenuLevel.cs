@@ -6,6 +6,7 @@
         Level1,
         LevelPlus,
         Battleship,
-        InitBoats
+        InitBoats,
+        LoadGame
     }
 }

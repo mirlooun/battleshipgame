@@ -194,62 +194,6 @@ namespace Battleship.ConsoleUi
             Console.WriteLine();
             Console.ResetColor();
         }
-
-        public static void DrawBoards(ECellState[,] currentEnemyBoard, ECellState[,] currentPlayer)
-        {
-            Console.Clear();
-            
-            Console.ForegroundColor = ConsoleColor.Blue;
-            var width = currentEnemyBoard.GetUpperBound(0) + 1; //x-axis
-            var height = currentEnemyBoard.GetUpperBound(1) + 1; //y-axis
-            for (var colIndex = 0; colIndex < width; colIndex++)
-            {
-                if (colIndex == 0) Console.Write("    ");
-                if (colIndex + 1 < 10) Console.Write($"  {(char) (65 + colIndex) + 1}  ");
-                else if (colIndex + 1 < 100 && colIndex + 1 > 9) Console.Write($" {(char) (65 + colIndex) + 1}  ");
-                else Console.Write($"  {(char) (65 + colIndex) + 1}  ");
-            }
-
-            Console.WriteLine();
-
-            for (var colIndex = 0; colIndex < width; colIndex++)
-            {
-                if (colIndex == 0) Console.Write("    ");
-                Console.Write("+---+");
-            }
-
-            Console.WriteLine();
-
-            for (var rowIndex = 0; rowIndex < height; rowIndex++)
-            {
-                if (rowIndex + 1 < 10) Console.Write("  ");
-                else if (rowIndex + 1 > 9 && rowIndex + 1 < 100) Console.Write(" ");
-                Console.Write($"{rowIndex + 1} ");
-
-                for (var colIndex = 0; colIndex < width; colIndex++)
-                {
-                    Console.Write("| ");
-                    var cellState = CellString(currentEnemyBoard[colIndex, rowIndex], false);
-                    if (cellState.Equals("*")) Console.ForegroundColor = ConsoleColor.Gray;
-                    else if (cellState.Equals("S")) Console.ForegroundColor = ConsoleColor.Green;
-                    else if (cellState.Equals("X")) Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(cellState);
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.Write(" |");
-                }
-                Console.WriteLine();
-                for (var colIndex = 0; colIndex < width; colIndex++)
-                {
-                    if (colIndex == 0) Console.Write("    ");
-                    Console.Write("+---+");
-                }
-
-                Console.WriteLine();
-            }
-
-            Console.WriteLine();
-        }
-        
         private static string CellString(ECellState cellState, bool displayShips)
         {
             switch (cellState)

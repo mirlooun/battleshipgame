@@ -24,7 +24,7 @@ namespace Application
         static void Main(string[] args)
         {
             SetConsoleWindowPosition();
-            if (args.Length == 1) InitializeGameStateControllers(args);
+            InitializeGameStateControllers(args);
             Run();
             Exit();
         }
@@ -54,7 +54,7 @@ namespace Application
         }
         private static string LoadGame()
         {
-            var menu = new Menu.Menu(MenuLevel.Level1, "Load game menu");
+            var menu = new Menu.Menu(MenuLevel.LoadGame, "Load game menu");
             menu.AddMenuItems(GameStateController.GetGameSavesList(RunBattleship));
             return menu.Run();
         }
@@ -84,14 +84,12 @@ namespace Application
         private static string RunSettingsMenu()
         {
             var menu = new SettingsUiProvider();
-            var userChoice = menu.Run();
-            return userChoice;
+            return menu.Run();;
         }
         
         private static string RunBattleship(GameEngine gameEngine)
         {
             var game = new BattleshipGame(gameEngine);
-
             return game.Run();
         }
 

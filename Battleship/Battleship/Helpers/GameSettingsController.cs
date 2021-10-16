@@ -24,11 +24,6 @@ namespace Battleship.Helpers
         {
             if (_gameSettings != null) return _gameSettings;
             
-            if (!System.IO.Directory.Exists(FileStandardDirectoryLocation))
-            {
-                System.IO.Directory.CreateDirectory(FileStandardDirectoryLocation);
-            }
-            
             if (System.IO.File.Exists(FileStandardPath))
             {
                 var confText = System.IO.File.ReadAllText(FileStandardPath);
@@ -57,6 +52,11 @@ namespace Battleship.Helpers
         public static void SetInitialPath(string[] args)
         {
             _pathRoot = args.Length == 1 ? args[0] : _pathRoot;
+            
+            if (!System.IO.Directory.Exists(FileStandardDirectoryLocation))
+            {
+                System.IO.Directory.CreateDirectory(FileStandardDirectoryLocation);
+            }
         }
 
         private static GameSettings GetDefaultGameSettings()

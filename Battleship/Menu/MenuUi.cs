@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Contracts.Menu;
 using Helpers;
 
 namespace Menu
@@ -141,6 +139,22 @@ ______ _                         _____
         public static void ShowPressRKeyMessage()
         {
             Console.WriteLine(" Press 'R' to rotate a boat");
+        }
+
+        public static void ShowLoadMenuLogo()
+        {
+            Console.Title = "Load games";
+            const string title = @"
+ _                     _                                   
+| |                   | |                                  
+| |     ___   __ _  __| |   __ _  __ _ _ __ ___   ___  ___ 
+| |    / _ \ / _` |/ _` |  / _` |/ _` | '_ ` _ \ / _ \/ __|
+| |___| (_) | (_| | (_| | | (_| | (_| | | | | | |  __/\__ \
+\_____/\___/ \__,_|\__,_|  \__, |\__,_|_| |_| |_|\___||___/
+                            __/ |                          
+                           |___/                           
+";
+            Console.WriteLine(title);
         }
     }
 

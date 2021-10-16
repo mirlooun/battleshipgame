@@ -28,14 +28,7 @@ namespace Menu
             do
             {
                 ResetCursorPosition();
-                if (MenuLevel == MenuLevel.Level1)
-                {
-                    MenuUi.ShowSettingsLogo();
-                }
-                else
-                {
-                    MenuUi.ShowGameLogo();
-                }
+                ShowMenuLevelSpecificTitle();
                 MenuUi.ShowMenuLabel(Label);
                 MenuUi.ShowMenuItems(MenuItems, PointerLocation);
                 MenuUi.ShowPressKeyMessage();
@@ -57,6 +50,26 @@ namespace Menu
             if (userChoice == "Return") userChoice = "";
 
             return !NotReturn(userChoice) ? "" : userChoice;
+        }
+
+        private void ShowMenuLevelSpecificTitle()
+        {
+            if (MenuLevel == MenuLevel.Level1)
+            {
+                MenuUi.ShowSettingsLogo();
+            }
+            else if (MenuLevel == MenuLevel.LoadGame)
+            {
+                MenuUi.ShowLoadMenuLogo();
+                if (MenuItems.Count == 2)
+                {
+                    Console.WriteLine("Currently there are no game saves on local...");
+                }
+            }
+            else
+            {
+                MenuUi.ShowGameLogo();
+            }
         }
         protected virtual ConsoleKey HandleKeyPress()
         {
@@ -82,7 +95,7 @@ namespace Menu
         {
             switch (MenuLevel)
             {
-                case MenuLevel.Level1 or MenuLevel.LevelPlus:
+                case MenuLevel.Level1 or MenuLevel.LevelPlus or MenuLevel.LoadGame:
                     AddMenuItem(new MenuItem(MenuItems.Count + 1, "Return", () => "Return"));
                     if (MenuLevel == MenuLevel.LevelPlus)
                     {

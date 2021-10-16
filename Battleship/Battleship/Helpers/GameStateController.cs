@@ -13,17 +13,21 @@ namespace Battleship.Helpers
     {
         private static string _pathRoot = System.IO.Directory.GetCurrentDirectory();
 
-        private static readonly JsonSerializerOptions? JsonOptions = new ()
+        private static readonly JsonSerializerOptions? JsonOptions = new()
         {
             WriteIndented = true
         };
         private static string FileStandardDirectoryLocation => _pathRoot +
                                                                System.IO.Path.DirectorySeparatorChar +
                                                                "Saves";
-        
         public static void SetInitialPath(string[] args)
         {
             _pathRoot = args.Length == 1 ? args[0] : _pathRoot;
+            
+            if (!System.IO.Directory.Exists(FileStandardDirectoryLocation))
+            {
+                System.IO.Directory.CreateDirectory(FileStandardDirectoryLocation);
+            }
         }
         public static void SaveGameToLocal(GameEngine gameEngine)
         {
@@ -69,8 +73,7 @@ namespace Battleship.Helpers
                                         System.IO.Path.DirectorySeparatorChar +
                                         saveFileName, confJsonStr);
         }
-
-        public static GameEngine LoadGameFromLocal(string saveFilePath)
+        private static GameEngine LoadGameFromLocal(string saveFilePath)
         {
             var saveText = System.IO.File.ReadAllText(saveFilePath);
             var gameEngineDto = JsonSerializer.Deserialize<GameEngineDto>(saveText)!;
@@ -97,7 +100,7 @@ namespace Battleship.Helpers
             
             var playerA = new Player(playerAName, playerABoats, playerAHits);
             
-            var playerBBoats = gameEngineDto.Players![0].Boats!.Select(boat =>
+            var playerBBoats = gameEngineDto.Players![1].Boats!.Select(boat =>
             {
                 var originalBoat = new Boat(boat.Type);
                 originalBoat.SetPlaced();
@@ -105,8 +108,8 @@ namespace Battleship.Helpers
                 return originalBoat;
             }).ToList();
             
-            var playerBHits = gameEngineDto.Players[0].MadeHits!;
-            var playerBName = gameEngineDto.Players[0].Name!;
+            var playerBHits = gameEngineDto.Players[1].MadeHits!;
+            var playerBName = gameEngineDto.Players[1].Name!;
             
             var playerB = new Player(playerBName, playerBBoats, playerBHits);
 
@@ -116,7 +119,6 @@ namespace Battleship.Helpers
 
             return gameEngine;
         }
-        
         public static List<MenuItem> GetGameSavesList(Func<GameEngine, string> delegateRunGame)
         {
             var menuItems = new List<MenuItem>();
